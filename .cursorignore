@@ -1,0 +1,12 @@
+﻿# Build outputs
+backend/target/
+frontend/node_modules/
+frontend/dist/
+
+# Env & secrets
+.env
+.env.*
+**/.env
+
+# Logs
+*.log
