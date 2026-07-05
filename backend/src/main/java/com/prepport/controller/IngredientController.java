@@ -1,0 +1,66 @@
+package com.prepport.controller;
+
+import java.util.List;
+
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import com.prepport.repository.IngredientRepository;
+import com.prepport.entity.Ingredient;
+
+@RestController
+@RequestMapping("/api/ingredients")
+public class IngredientController {
+
+    private final IngredientRepository repository;
+
+    public IngredientController(IngredientRepository repository) {
+        this.repository = repository;
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Ingredient createIngredient(@RequestBody Ingredient ingredient) {
+        return repository.save(ingredient);
+    }
+
+    @GetMapping
+    public List<Ingredient> listIngredients() {
+        return repository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Ingredient getIngredient(@PathVariable Long id) {
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found"));
+    }
+
+    @PutMapping("/{id}")
+    public Ingredient updateIngredient(@PathVariable Long id, @RequestBody Ingredient ingredient) {
+        Ingredient ingredientToUpdate = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found"));
+        ingredientToUpdate.setName(ingredient.getName());
+        ingredientToUpdate.setMacroBasis(ingredient.getMacroBasis());
+        ingredientToUpdate.setProteinPer100g(ingredient.getProteinPer100g());
+        ingredientToUpdate.setCarbsPer100g(ingredient.getCarbsPer100g());
+        ingredientToUpdate.setFatPer100g(ingredient.getFatPer100g());
+        ingredientToUpdate.setKcalPer100g(ingredient.getKcalPer100g());
+        ingredientToUpdate.setNotes(ingredient.getNotes());
+        return repository.save(ingredientToUpdate);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteIngredient(@PathVariable Long id) {
+        if (!repository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found");
+        }
+        repository.deleteById(id);
+    }
+}
