@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: prepport-postgres
+    environment:
+      POSTGRES_DB: prepport
+      POSTGRES_USER: prepport
+      POSTGRES_PASSWORD: prepport
+    ports:
+      - "5432:5432"
+    volumes:
+      - prepport-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  prepport-postgres-data:

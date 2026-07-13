@@ -72,6 +72,8 @@ PrepPort/
 3. You implement; paste errors or `@` files when stuck
 4. End with one sentence: what you learned + next step
 
+For each slice kickoff, include a short **learning split**: what gets a quick intro, what gets scaffolded with explanation, what you should type yourself, and what to debug together. Use outside tutorials only as targeted supplements, not prerequisites.
+
 **Commit often** — one logical piece per commit (`feat: ingredient entity`, `feat: yield calculator tests`).
 
 ---

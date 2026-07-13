@@ -1,0 +1,25 @@
+### Health check
+GET http://localhost:8080/health
+
+### List ingredients
+GET http://localhost:8080/api/ingredients
+
+### Create chicken breast
+POST http://localhost:8080/api/ingredients
+Content-Type: application/json
+
+{
+    "name": "Chicken Breast, raw",
+    "macroBasis": "RAW",
+    "proteinPer100g": 31.0,
+    "carbsPer100g": 0.0,
+    "fatPer100g": 3.6,
+    "kcalPer100g": 165.0,
+    "notes": "From Cronometer Data"
+}
+
+### Get chicken breast
+GET http://localhost:8080/api/ingredients/1
+
+### Delete chicken breast
+DELETE http://localhost:8080/api/ingredients/2
