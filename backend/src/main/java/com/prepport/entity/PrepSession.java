@@ -2,14 +2,18 @@ package com.prepport.entity;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.FetchType;
 
 @Entity
 @Table(name = "prep_sessions")
@@ -18,9 +22,13 @@ public class PrepSession {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToMany(mappedBy = "prepSession", fetch = FetchType.EAGER)
+    private List<Batch> batches;
+    
     @Column(name = "session_date", nullable = false)
     private LocalDate sessionDate;
 
+    @Column(name = "notes")
     private String notes;
 
     @Column(name = "created_at", nullable = false)
@@ -54,6 +62,11 @@ public class PrepSession {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    @JsonManagedReference
+    public List<Batch> getBatches() {
+        return batches;
     }
 
     public void setSessionDate(LocalDate sessionDate) {

@@ -38,6 +38,7 @@ public class Ingredient {
     @Column(name = "kcal_per_100g", nullable = false)
     private double kcalPer100g;
 
+    @Column(name = "notes")
     private String notes;
 
     @Column(name = "created_at", nullable = false)

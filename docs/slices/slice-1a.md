@@ -6,9 +6,9 @@ Done when:
 
 - [x] `GET /health` returns `200 OK` with a simple response like `OK` or `{ "status": "ok" }`
 - [x] Ingredients CRUD works: create, list, update, delete an ingredient with manual macro fields
-- [ ] Prep sessions + batches work: create a prep session, add a batch with raw/cooked weights, and read it back
-- [ ] Postgres runs via Docker Compose and the app connects to it locally
-- [ ] `requests.http` contains at least 3 working calls: health, create ingredient, create/read batch
+- [x] Prep sessions + batches work: create a prep session, add a batch with raw/cooked weights, and read it back
+- [x] Postgres runs via Docker Compose and the app connects to it locally
+- [x] `requests.http` contains at least 3 working calls: health, create ingredient, create/read batch
 
 Work order:
 

@@ -21,5 +21,25 @@ Content-Type: application/json
 ### Get chicken breast
 GET http://localhost:8080/api/ingredients/1
 
-### Delete chicken breast
-DELETE http://localhost:8080/api/ingredients/2
+
+### Create prep session
+POST http://localhost:8080/api/prep-sessions
+Content-Type: application/json
+
+{
+  "sessionDate": "2026-07-20",
+  "notes": "Sunday chicken prep"
+}
+
+### Add chicken batch to session (use session id from above)
+POST http://localhost:8080/api/prep-sessions/1/batches
+Content-Type: application/json
+
+{
+  "ingredient": { "id": 1 },
+  "rawWeightG": 2146,
+  "cookedWeightG": 1600
+}
+
+### Read session back with batches
+GET http://localhost:8080/api/prep-sessions/1
