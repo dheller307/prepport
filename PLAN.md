@@ -288,14 +288,17 @@ raw=2146g, cooked=1600g, protein=31g/100g raw
 
 **Start here if:** you want confidence before Spring setup.
 
-### Slice 1a — Backend CRUD (no auth) · **by Jul 6**
+### Slice 1a — Backend CRUD (no auth) · **by Jul 6** ✓ Complete
 
 - Spring Boot + PostgreSQL
 - CRUD: ingredients, prep-sessions, batches
 - Test with curl or Postman
 - **Dogfood:** log your last Sunday chicken batch via API
+- See [docs/slices/slice-1a.md](./docs/slices/slice-1a.md)
 
-### Slice 1b — JWT auth · **by Jul 6–10**
+### Slice 1b — JWT auth · **by Jul 6–10** ← current
+
+- See [docs/slices/slice-1b.md](./docs/slices/slice-1b.md)
 
 - Register/login, protect routes
 - **Approach:** scaffold + study — read Security config before changing it
@@ -466,7 +469,7 @@ PrepPort satisfies the full-stack requirements from the [internship prep plan](c
 | Week ending | Focus | Exit criteria |
 |-------------|-------|---------------|
 | **Jun 29** | Slice 0 or 1a + application tracker (2 hrs) | Math tests OR first API; tracker bookmarked |
-| **Jul 6** | 1a done, 1b started | curl: ingredient + batch |
+| **Jul 6** | 1a done, 1b started | curl: ingredient + batch *(1a done Jul 2026; 1b in progress)* |
 | **Jul 13** | Slice 2 portion + export | 268g raw for 200g cooked |
 | **Jul 20** | React slices 4–5 | Full local UI flow |
 | **Jul 27** | Deploy + README + resume link | **Live demo URL** |
@@ -481,7 +484,7 @@ Weekday evenings (~2–3 hrs): finish current slice if weekend was short — don
 | Target date | Slice | Done when |
 |-------------|-------|-----------|
 | **Jun 29** | 0 or 1a | Chicken math tests OR first API works |
-| **Jul 6** | 1a + 1b | curl creates batch; login protects routes |
+| **Jul 6** | 1a + 1b | curl creates batch; login protects routes *(1a ✓)* |
 | **Jul 13** | 2 (+ 3 optional) | 268g raw for 200g cooked; export text works |
 | **Jul 20** | 4 + 5 | Full Sunday flow in browser |
 | **Jul 27** | 8 + 9 | **Live URL + README on resume** |
@@ -509,12 +512,11 @@ Weekday evenings (~2–3 hrs): finish current slice if weekend was short — don
 
 ---
 
-## Next action (pick one)
+## Next action
 
-1. **Slice 0** — Plain Java `YieldCalculator` + JUnit (no Spring). **Zero prep.**
-2. **Slice 1a** — Spring Boot + first REST endpoint. **10-min intro from me, then you code.**
-3. **Slice 1b** — Only after 1a works. **I scaffold auth; you study + integrate.**
+**Slice 1b — JWT auth.** Register/login, protect routes, add `user_id` to ingredients and prep sessions.
 
-**Recommendation:** Slice 0 if you have 1–2 hours this week; otherwise Slice 1a with me walking through Spring file-by-file.
+- Slice doc: [docs/slices/slice-1b.md](./docs/slices/slice-1b.md)
+- Approach: agent scaffolds Security config + JWT; you study and wire register/login + user scoping.
 
-When ready, say **"let's do PrepPort slice 0"** or **"scaffold PrepPort slice 1a"** and we'll go step by step with you driving.
+When ready, say **"let's do PrepPort slice 1b"** and we'll scaffold auth, then you integrate.

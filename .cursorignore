@@ -10,3 +10,6 @@ frontend/dist/
 
 # Logs
 *.log
+
+# VSCode
+.vscode/

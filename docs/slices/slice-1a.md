@@ -1,5 +1,7 @@
 # Slice 1a — Backend CRUD (no auth)
 
+**Status:** Complete (Jul 2026) · **Next:** [slice-1b](./slice-1b.md)
+
 **Target:** Jul 6 · Spring Boot backend with Postgres-backed CRUD. Single-user/dev mode only.
 
 Done when:
@@ -59,5 +61,7 @@ Suggested package shape:
 - `yield` or `service` — pure math/domain logic
 
 Not in scope: JWT/auth, React, Cronometer export, portion builder, meal templates, USDA/search/templates, polished validation, production deploy.
+
+Also shipped: Maven Wrapper (`backend/mvnw`) for laptop/desktop parity.
 
 First commit-sized step: upgrade `backend/pom.xml` to Spring Boot, add `PrepPortApplication` and `HealthController`, then verify `GET /health` works locally before adding entities.
