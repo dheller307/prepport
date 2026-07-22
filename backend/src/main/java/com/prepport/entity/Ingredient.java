@@ -11,6 +11,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "ingredients")
@@ -18,6 +22,10 @@ public class Ingredient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -99,6 +107,11 @@ public class Ingredient {
         return createdAt;
     }
 
+    @JsonIgnore
+    public User getUser() {
+        return user;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -125,5 +138,9 @@ public class Ingredient {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

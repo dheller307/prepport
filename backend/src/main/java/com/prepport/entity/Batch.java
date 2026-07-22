@@ -31,7 +31,7 @@ public class Batch {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "raw_weight_g")
+    @Column(name = "raw_weight_g", nullable = false)
     private Double rawWeightG;
 
     @Column(name = "cooked_weight_g", nullable = false)
@@ -78,11 +78,11 @@ public class Batch {
         return ingredient;
     }
 
-    public void setRawWeightG(double rawWeightG) {
+    public void setRawWeightG(Double rawWeightG) {
         this.rawWeightG = rawWeightG;
     }
     
-    public void setCookedWeightG(double cookedWeightG) {
+    public void setCookedWeightG(Double cookedWeightG) {
         this.cookedWeightG = cookedWeightG;
     }
 

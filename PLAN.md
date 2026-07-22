@@ -237,11 +237,13 @@ You were unsure how users add foods. Use **tiered onboarding** — ship Tier 1 i
 
 | Ingredient | Basis | Notes |
 |------------|-------|-------|
-| Chicken breast, raw | RAW | Your 4.73 lb → 1600g example |
-| White rice, cooked | COOKED | Weigh rice after cooking |
-| Broccoli, cooked | COOKED | Same |
+| Chicken breast, raw | RAW | Dry/raw weigh → cook → cooked yield (yield &lt; 1) |
+| White rice, dry | RAW | Dry weigh → cook → cooked yield (yield &gt; 1) |
+| Broccoli, raw | RAW | Raw florets → cook → cooked yield |
 
-Rice/broccoli can use **COOKED** basis so you skip yield math on those batches (weigh cooked in = cooked out, yield 1.0) until you want raw-rice tracking later.
+**MVP batch rule:** Every batch records **both** `raw_weight_g` and `cooked_weight_g`. Dry/raw weight drives batch macros; cooked weight drives portions and yield ratio (works for chicken shrinkage and rice absorption alike).
+
+**Defer post-MVP:** Post-cook add-ins (butter/oil stirred into a finished pan) — model as separate ingredients or composite batches later.
 
 ### Tier 2 — Quick-add templates (Phase 2)
 
@@ -251,9 +253,9 @@ Pre-built **templates** user can clone into their library:
 
 - Chicken breast (raw)
 - Ground turkey (raw)
-- Jasmine rice (cooked)
-- Broccoli (cooked)
-- Sweet potato (cooked)
+- Jasmine rice (dry/raw)
+- Broccoli (raw)
+- Sweet potato (raw)
 
 Templates ship as JSON in the backend (`/api/ingredient-templates`). User picks one → edits if needed → saves as their ingredient.
 
@@ -275,7 +277,26 @@ USDA FDC API is free: https://fdc.nal.usda.gov/api-guide.html
 
 ## Build slices (mapped to calendar)
 
-Build in **vertical slices**, not horizontal layers. Dates assume start **weekend of Jun 26, 2026**; shift if needed.
+Build in **vertical slices**, not horizontal layers. Dates revised **Jul 2026** after slice 1b.
+
+### MVP tiers (what “done” means)
+
+| Tier | Slices | You have… |
+|------|--------|-----------|
+| **Product MVP** (local) | 0, 1a, 1b ✓ + **2** + **4** + **5** | Full Sunday flow in the browser: prep → portion → Cronometer export |
+| **Resume MVP** (deployed) | Product MVP + **8** + **9** | Live demo URL, README, GitHub pin for applications |
+
+Slices **3**, **6**, **7** optional — polish while applying, not blockers.
+
+**Deadlines (revised):**
+
+| Target | Slice(s) |
+|--------|----------|
+| **Jul 24** | 2 — portion calculate + export API |
+| **Jul 28–29** | 4 + 5 — React UI (ingredients, prep, portion builder, export) |
+| **Jul 31** (worst case) | 8 + 9 — deploy + README/resume link |
+
+Then iterate (templates, tests, add-ins) **while applications go out** (fall intern recruiting peak Sept–Nov 2026).
 
 ### Slice 0 — Yield math · **by Jun 29**
 
@@ -296,14 +317,15 @@ raw=2146g, cooked=1600g, protein=31g/100g raw
 - **Dogfood:** log your last Sunday chicken batch via API
 - See [docs/slices/slice-1a.md](./docs/slices/slice-1a.md)
 
-### Slice 1b — JWT auth · **by Jul 6–10** ← current
+### Slice 1b — JWT auth · **by Jul 6–10** ✓ Complete
 
 - See [docs/slices/slice-1b.md](./docs/slices/slice-1b.md)
+- Register/login, JWT, `user_id` scoping, `requests.http` auth flow
+- **Also shipped:** `CreateBatchRequest` DTO; ingredient ownership on batch create
 
-- Register/login, protect routes
-- **Approach:** scaffold + study — read Security config before changing it
+### Slice 2 — Portion calculate + Cronometer export · **by Jul 24** ← current
 
-### Slice 2 — Portion calculate + Cronometer export · **by Jul 13**
+- See [docs/slices/slice-2.md](./docs/slices/slice-2.md)
 
 - `POST /api/portion/calculate` — `{ batchId, cookedGrams }` → raw equivalent + macros + totals
 - `GET /api/portion/export` — copy-paste block (core product value + export in one slice)
@@ -321,17 +343,17 @@ Broccoli, cooked ................. 85 g
 Totals: 52 P / 48 C / 8 F / 480 kcal
 ```
 
-### Slice 3 — Postman / API comfort · **optional, Jul 13**
+### Slice 3 — Postman / API comfort · **optional** (buffer before React)
 
 - Document all endpoints; save collection
-- Skip if confident — buffer week only
+- Skip if confident
 
-### Slice 4 — React: ingredients + prep session · **by Jul 20**
+### Slice 4 — React: ingredients + prep session · **by Jul 28–29**
 
 1. Ingredients list + add form
 2. New prep session + batches
 
-### Slice 5 — React: portion builder + export UI · **by Jul 20**
+### Slice 5 — React: portion builder + export UI · **by Jul 28–29** (ship with slice 4)
 
 3. Portion builder with live macros
 4. Export panel with copy button
@@ -346,11 +368,11 @@ Mobile-friendly (Sunday at the scale).
 
 - Clone starter foods from JSON templates
 
-### Slice 8 — Deploy · **by Jul 27**
+### Slice 8 — Deploy · **by Jul 31** (worst case; aim earlier after 4+5)
 
 - Docker Compose, Render/Railway, env vars, auth hardened for production
 
-### Slice 9 — README + resume · **by Jul 27**
+### Slice 9 — README + resume · **by Jul 31** (ship with slice 8)
 
 - Screenshots, setup instructions, live demo link, GitHub pin
 
@@ -358,16 +380,18 @@ Mobile-friendly (Sunday at the scale).
 
 ## Raw vs cooked basis — decision guide
 
-When onboarding an ingredient, pick one:
+**`macro_basis` on Ingredient** = where per-100g macros came from in Cronometer (RAW dry entry vs COOKED entry). **`raw_weight_g` / `cooked_weight_g` on Batch** = what you weighed Sunday (always both in MVP).
 
-| Food | Recommended basis | Batch fields |
-|------|-----------------|--------------|
-| Chicken, beef, fish | **RAW** | Enter raw_weight_g + cooked_weight_g |
-| Rice, pasta (dry) | RAW (advanced) or **COOKED** (simpler) | If COOKED: only cooked_weight_g, yield = 1 |
-| Vegetables | **COOKED** | Only cooked_weight_g |
-| Pre-made sauce | COOKED or per-label serving | cooked only |
+| Food | Recommended `macro_basis` | Batch fields (MVP) |
+|------|-------------------------|-------------------|
+| Chicken, beef, fish | **RAW** | `raw_weight_g` + `cooked_weight_g` |
+| Rice, pasta (dry) | **RAW** | `raw_weight_g` + `cooked_weight_g` (yield often &gt; 1) |
+| Vegetables | **RAW** (or COOKED if macros are per cooked 100g) | `raw_weight_g` + `cooked_weight_g` |
+| Pre-made sauce | COOKED or per-label serving | `raw_weight_g` + `cooked_weight_g` (same shape; raw may equal cooked if no yield step) |
 
-**MVP rule:** Use RAW + yield for chicken only. Use COOKED-only batches for rice and broccoli (cooked_weight_g = total batch, raw_weight_g optional/null). Reduces onboarding friction while you prove the chicken workflow.
+**MVP rule:** All batches require **both** weights. Yield math applies uniformly (`cooked / raw`); chicken shrinks, rice expands — same workflow.
+
+**Post-MVP:** Optional COOKED-only shortcut ingredients, post-cook add-ins in one pan, and composite batches.
 
 ---
 
@@ -426,8 +450,8 @@ prep_sessions (
 
 batches (
   id, prep_session_id, ingredient_id,
-  raw_weight_g,          -- nullable if COOKED-only ingredient
-  cooked_weight_g,
+  raw_weight_g,          -- required (dry/raw weigh-in)
+  cooked_weight_g,       -- required (post-cook yield for portions)
   created_at
 )
 
@@ -462,20 +486,20 @@ PrepPort satisfies the full-stack requirements from the [internship prep plan](c
 
 ---
 
-## Calendar (start: weekend of June 26, 2026)
+## Calendar (revised Jul 2026)
 
-**Target deploy: Jul 27, 2026** (absolute latest Aug 3) — before fall SWE intern recruiting peak (Sept–Nov 2026).
+**Product MVP local:** slices 2 + 4 + 5 by **Jul 29**. **Resume MVP deployed:** slices 8 + 9 by **Jul 31** (worst case).
 
-| Week ending | Focus | Exit criteria |
+| Target date | Focus | Exit criteria |
 |-------------|-------|---------------|
-| **Jun 29** | Slice 0 or 1a + application tracker (2 hrs) | Math tests OR first API; tracker bookmarked |
-| **Jul 6** | 1a done, 1b started | curl: ingredient + batch *(1a done Jul 2026; 1b in progress)* |
-| **Jul 13** | Slice 2 portion + export | 268g raw for 200g cooked |
-| **Jul 20** | React slices 4–5 | Full local UI flow |
-| **Jul 27** | Deploy + README + resume link | **Live demo URL** |
-| **Jul 31 – Aug 14** | Apply per opening | Within 2 weeks of each post |
+| **Jun 29** | Slice 0 or 1a | Math tests OR first API *(done)* |
+| **Jul 6–22** | 1a + 1b | JWT auth; scoped CRUD *(done)* |
+| **Jul 24** | Slice 2 | 268g raw for 200g cooked; export API works |
+| **Jul 28–29** | Slices 4 + 5 | Full Sunday flow in browser |
+| **Jul 31** | Slices 8 + 9 | **Live demo URL + README on resume** |
+| **Aug onward** | Apply + polish | 6, 7, tests, post-MVP features while applications open |
 
-Weekday evenings (~2–3 hrs): finish current slice if weekend was short — don't skip ahead.
+Weekday evenings (~2–3 hrs): finish current slice if the week was short — don't skip ahead of product MVP (2 → 4 → 5) before deploy.
 
 ---
 
@@ -483,12 +507,12 @@ Weekday evenings (~2–3 hrs): finish current slice if weekend was short — don
 
 | Target date | Slice | Done when |
 |-------------|-------|-----------|
-| **Jun 29** | 0 or 1a | Chicken math tests OR first API works |
-| **Jul 6** | 1a + 1b | curl creates batch; login protects routes *(1a ✓)* |
-| **Jul 13** | 2 (+ 3 optional) | 268g raw for 200g cooked; export text works |
-| **Jul 20** | 4 + 5 | Full Sunday flow in browser |
-| **Jul 27** | 8 + 9 | **Live URL + README on resume** |
-| *if time* | 6 + 7 | Meal + ingredient templates |
+| **Jun 29** | 0 or 1a | Chicken math tests OR first API works *(done)* |
+| **Jul 6–22** | 1a + 1b | Login protects routes; user-scoped CRUD *(done)* |
+| **Jul 24** | 2 (+ 3 optional) | 268g raw for 200g cooked; export text works |
+| **Jul 28–29** | 4 + 5 | **Product MVP:** full local UI flow |
+| **Jul 31** | 8 + 9 | **Resume MVP:** live URL + README |
+| *while applying* | 6 + 7 | Meal + ingredient templates |
 
 ---
 
@@ -500,23 +524,23 @@ Weekday evenings (~2–3 hrs): finish current slice if weekend was short — don
 - Cronometer login / sync
 - Mobile native app
 - Grocery lists (Phase 3+)
+- Post-cook add-ins modeled inside a single batch (butter stirred into rice pan) — defer until after MVP
 
 ---
 
 ## Success criteria (deploy before applications)
 
-- [ ] Used PrepPort for at least 1 real Sunday prep (2 ideal)
-- [ ] Chicken raw→cooked→portion→export without Google Notes
-- [ ] **Deployed + README + live demo by Jul 27, 2026**
+- [ ] Used PrepPort for at least 1 real Sunday prep (2 ideal) — after slices 4 + 5
+- [ ] Chicken raw→cooked→portion→export without Google Notes — **product MVP** (2 + 4 + 5)
+- [ ] **Deployed + README + live demo by Jul 31, 2026** (worst case) — **resume MVP** (8 + 9)
 - [ ] GitHub pinned; 2–3 JUnit API tests in repo
 
 ---
 
 ## Next action
 
-**Slice 1b — JWT auth.** Register/login, protect routes, add `user_id` to ingredients and prep sessions.
+**Slice 2 — Portion calculate + Cronometer export.**
 
-- Slice doc: [docs/slices/slice-1b.md](./docs/slices/slice-1b.md)
-- Approach: agent scaffolds Security config + JWT; you study and wire register/login + user scoping.
-
-When ready, say **"let's do PrepPort slice 1b"** and we'll scaffold auth, then you integrate.
+- Slice doc: [docs/slices/slice-2.md](./docs/slices/slice-2.md)
+- Wire [YieldCalculator](./backend/src/main/java/com/prepport/yield/YieldCalculator.java) into protected APIs; exit criterion: 200 g cooked chicken → ≈268 g raw + export text block.
+- Auth and user scoping from 1b carry forward — new portion routes are already behind `anyRequest().authenticated()`.

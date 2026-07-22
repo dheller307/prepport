@@ -1,14 +1,16 @@
 # Slice 1b — JWT auth
 
+**Status:** Complete (Jul 2026) · **Next:** [slice-2](./slice-2.md)
+
 **Target:** Jul 6–10 (revised: late Jul 2026) · Add register/login and protect existing APIs.
 
 Done when:
 
-- [ ] `POST /api/auth/register` creates a user (email + password)
-- [ ] `POST /api/auth/login` returns a JWT on valid credentials
-- [ ] Protected routes return `401` without a token
-- [ ] Ingredients and prep sessions are scoped to the logged-in user (`user_id`)
-- [ ] `requests.http` has register, login, and one authenticated call (e.g. create ingredient with `Authorization: Bearer …`)
+- [x] `POST /api/auth/register` creates a user (email + password)
+- [x] `POST /api/auth/login` returns a JWT on valid credentials
+- [x] Protected routes return `401 or 403` without a token
+- [x] Ingredients and prep sessions are scoped to the logged-in user (`user_id`)
+- [x] `requests.http` has register, login, and one authenticated call (e.g. create ingredient with `Authorization: Bearer …`)
 
 Work order:
 
@@ -60,3 +62,10 @@ Protected: all `/api/ingredients/**`, `/api/prep-sessions/**`, future portion/ex
 Not in scope: React login UI, refresh tokens, OAuth, email verification, password reset, role-based admin, production deploy hardening (basic secret in properties is OK for local dev).
 
 First commit-sized step: add Security + JWT deps, scaffold `User` entity and `UserRepository`, then register one user via a temporary endpoint or integration test before protecting routes.
+
+## Also shipped (beyond checklist)
+
+- `CreateBatchRequest` DTO for batch create (validation + `ingredientId`)
+- Ingredient ownership verified on `POST .../batches`
+- `JwtAuthFilter` principal = `User` entity (for `@AuthenticationPrincipal`)
+- PLAN updated: MVP batches always record raw + cooked weights

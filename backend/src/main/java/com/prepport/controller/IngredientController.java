@@ -13,13 +13,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 import com.prepport.repository.IngredientRepository;
 import com.prepport.entity.Ingredient;
+import com.prepport.entity.User;
 
 @RestController
 @RequestMapping("/api/ingredients")
 public class IngredientController {
-
     private final IngredientRepository repository;
 
     public IngredientController(IngredientRepository repository) {
@@ -28,23 +30,24 @@ public class IngredientController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Ingredient createIngredient(@RequestBody Ingredient ingredient) {
+    public Ingredient createIngredient(@RequestBody Ingredient ingredient, @AuthenticationPrincipal User user) {
+        ingredient.setUser(user);
         return repository.save(ingredient);
     }
 
     @GetMapping
-    public List<Ingredient> listIngredients() {
-        return repository.findAll();
+    public List<Ingredient> listIngredients(@AuthenticationPrincipal User user) {
+        return repository.findByUser(user);
     }
 
     @GetMapping("/{id}")
-    public Ingredient getIngredient(@PathVariable Long id) {
-        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found"));
+    public Ingredient getIngredient(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        return repository.findByIdAndUser(id, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found"));
     }
 
     @PutMapping("/{id}")
-    public Ingredient updateIngredient(@PathVariable Long id, @RequestBody Ingredient ingredient) {
-        Ingredient ingredientToUpdate = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found"));
+    public Ingredient updateIngredient(@PathVariable Long id, @RequestBody Ingredient ingredient, @AuthenticationPrincipal User user) {
+        Ingredient ingredientToUpdate = repository.findByIdAndUser(id, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found"));
         ingredientToUpdate.setName(ingredient.getName());
         ingredientToUpdate.setMacroBasis(ingredient.getMacroBasis());
         ingredientToUpdate.setProteinPer100g(ingredient.getProteinPer100g());
@@ -57,10 +60,10 @@ public class IngredientController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteIngredient(@PathVariable Long id) {
-        if (!repository.existsById(id)) {
+    public void deleteIngredient(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        if (!repository.existsByIdAndUser(id, user)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found");
         }
-        repository.deleteById(id);
+        repository.deleteByIdAndUser(id, user);
     }
 }

@@ -1,30 +1,60 @@
-### Health check
-GET http://localhost:8080/health
+@baseUrl = http://localhost:8080
+@token =
 
-### List ingredients
-GET http://localhost:8080/api/ingredients
+### Health check (public)
+GET {{baseUrl}}/health
 
-### Create chicken breast
-POST http://localhost:8080/api/ingredients
+### Register
+# @name register
+POST {{baseUrl}}/api/auth/register
 Content-Type: application/json
 
 {
-    "name": "Chicken Breast, raw",
-    "macroBasis": "RAW",
-    "proteinPer100g": 31.0,
-    "carbsPer100g": 0.0,
-    "fatPer100g": 3.6,
-    "kcalPer100g": 165.0,
-    "notes": "From Cronometer Data"
+  "email": "you@example.com",
+  "password": "Password1!"
 }
 
-### Get chicken breast
-GET http://localhost:8080/api/ingredients/1
+### Login (copy token from response, or use chained variable below)
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
 
+{
+  "email": "you@example.com",
+  "password": "Password1!"
+}
+
+@token = {{login.response.body.token}}
+
+### List ingredients (requires auth)
+GET {{baseUrl}}/api/ingredients
+Authorization: Bearer {{token}}
+
+### Create chicken breast
+# @name createIngredient
+POST {{baseUrl}}/api/ingredients
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Chicken Breast, raw",
+  "macroBasis": "RAW",
+  "proteinPer100g": 31.0,
+  "carbsPer100g": 0.0,
+  "fatPer100g": 3.6,
+  "kcalPer100g": 165.0,
+  "notes": "From Cronometer Data"
+}
+
+### Get chicken breast (use id from create response)
+GET {{baseUrl}}/api/ingredients/1
+Authorization: Bearer {{token}}
 
 ### Create prep session
-POST http://localhost:8080/api/prep-sessions
+# @name createPrepSession
+POST {{baseUrl}}/api/prep-sessions
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "sessionDate": "2026-07-20",
@@ -32,14 +62,19 @@ Content-Type: application/json
 }
 
 ### Add chicken batch to session (use session id from above)
-POST http://localhost:8080/api/prep-sessions/1/batches
+POST {{baseUrl}}/api/prep-sessions/1/batches
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-  "ingredient": { "id": 1 },
+  "ingredientId": 1,
   "rawWeightG": 2146,
   "cookedWeightG": 1600
 }
 
 ### Read session back with batches
-GET http://localhost:8080/api/prep-sessions/1
+GET {{baseUrl}}/api/prep-sessions/1
+Authorization: Bearer {{token}}
+
+### Protected route without token (expect 401 or 403)
+GET {{baseUrl}}/api/ingredients

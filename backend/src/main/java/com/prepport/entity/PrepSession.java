@@ -12,8 +12,12 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "prep_sessions")
@@ -21,6 +25,10 @@ public class PrepSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @OneToMany(mappedBy = "prepSession", fetch = FetchType.EAGER)
     private List<Batch> batches;
@@ -69,11 +77,20 @@ public class PrepSession {
         return batches;
     }
 
+    @JsonIgnore
+    public User getUser() {
+        return user;
+    }
+
     public void setSessionDate(LocalDate sessionDate) {
         this.sessionDate = sessionDate;
     }
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
