@@ -29,9 +29,16 @@ public class YieldCalculatorTest {
     }
 
     @Test
-    @DisplayName("Protein for 200g cooked chicken is ~83.16g")
-    void proteinForCookedPortion_chickenPortion_returns83() {
-        double result = calc.proteinForCookedPortion(200, 2146, 1600, 31.0);
-        assertEquals(83.16, result, 0.01);
+    @DisplayName("Protein for 200g cooked chicken is ~60.36g")
+    void proteinForCookedPortion_chickenPortion_returns6036() {
+        double result = calc.calculateForCookedPortion(200, 2146, 1600, 22.5);
+        assertEquals(60.36, result, 0.01);
+    }
+
+    @Test
+    @DisplayName("Protein for 200g matching basis chicken is ~61.00g")
+    void proteinForMatchingBasis_chickenPortion_returns61() {
+        double result = calc.calculateForMatchingBasis(200, 30.5);
+        assertEquals(61.00, result, 0.01);
     }
 }
