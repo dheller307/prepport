@@ -7,6 +7,4 @@ public record CreateBatchRequest(
     @NotNull Long ingredientId,
     @NotNull @Positive Double rawWeightG,
     @NotNull @Positive Double cookedWeightG
-) {
-    
-}
+) {}

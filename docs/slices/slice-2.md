@@ -35,19 +35,27 @@
 4. Export: define text format (see PLAN example); `GET` or `POST` with portion line(s).
 5. JUnit tests for calculate path (chicken numbers); update `requests.http`.
 
+Learning split:
+
+- **DTOs (`PortionCalculateRequest`, `PortionCalculateResponse`, `PortionExportRequest`)** — you type; mirror `CreateBatchRequest` (records, validation); nested `@Valid` on export `lines` — quick intro when you add it
+- **`macro_basis` (RAW vs COOKED)** — quick intro when scaling macros (PLAN raw vs cooked); yield math is the same; basis tells you which per-100g fields to use
+- **`YieldCalculator`** — **ready** (Slice 0); you wire from `PortionService`; add carbs/fat/kcal helpers alongside protein if needed
+- **`@Service` / `PortionService`** — quick intro (first service layer in the project); you implement calculate + shared logic export reuses
+- **Batch lookup scoped to user** — quick intro (`Batch` → `PrepSession` → `User`, or a repository query); you add the repository method and call it from the service
+- **`PortionController`** — short intro on thin controllers; you implement `POST /calculate` and export endpoint; pass `@AuthenticationPrincipal User` like existing controllers
+- **404 for wrong / other-user batch** — **ready**; same `ResponseStatusException` pattern as ingredients and prep sessions
+- **Cronometer export text** — format spec from PLAN (agent brief); you implement string build, per-line raw grams, and meal totals
+- **`text/plain` export response** — quick intro (`produces` or `ResponseEntity` content type); JSON only for calculate
+- **`PortionServiceTest` (chicken ≈268 g raw)** — you type; prefer unit test on service + calculator without full Spring context
+- **`requests.http` (calculate + export with Bearer)** — you write/run
+- **JWT on new routes** — **ready**; `SecurityConfig` already uses `anyRequest().authenticated()` — no change unless debugging 401
+
 ## API sketch (from PLAN)
 
 ```
 POST   /api/portion/calculate
 GET    /api/portion/export
 ```
-
-## Learning split
-
-- **YieldCalculator integration** — you wire; math already tested in Slice 0
-- **Service layer** — quick intro if first `@Service` in project
-- **DTOs for calculate response** — you define fields (rawEquivalentG, protein, carbs, fat, kcal)
-- **Export string formatting** — you implement; plain Java string build is fine
 
 ## Not in scope
 
