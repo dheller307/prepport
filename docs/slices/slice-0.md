@@ -7,7 +7,7 @@
 Done when:
 - [x] `yieldRatio(2146, 1600)` ≈ `0.746` (cooked ÷ raw)
 - [x] `rawEquivalentG(200, 2146, 1600)` ≈ `268` g (Cronometer raw weight for a cooked scoop)
-- [x] `proteinForCookedPortion(200, 2146, 1600, 31.0)` ≈ `83` g (31 g protein / 100 g raw)
+- [x] `calculateForCookedPortion(200, 2146, 1600, 22.5)` ≈ `60` g (22.5 g protein / 100 g raw, Cronometer)
 - [x] JUnit suite green via `./mvnw test` from `backend/`
 - [x] Chicken scenario documented as a comment or `@DisplayName` in the test class
 

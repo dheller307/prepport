@@ -184,10 +184,10 @@ A **stable food definition** you reuse every week. Macros are stored **per 100g*
 |-------|---------|
 | name | Chicken breast, boneless skinless |
 | macro_basis | `RAW` or `COOKED` |
-| protein_per_100g | 31.0 |
+| protein_per_100g | 22.5 |
 | carbs_per_100g | 0.0 |
-| fat_per_100g | 3.6 |
-| kcal_per_100g | 165 |
+| fat_per_100g | 2.6 |
+| kcal_per_100g | 120 |
 | notes | "Copied from Cronometer 2026-06-10" |
 
 ### Batch (per prep session)
@@ -303,8 +303,8 @@ Then iterate (templates, tests, add-ins) **while applications go out** (fall int
 Pure Java: given raw g, cooked g, macros per 100g raw → macros per 100g cooked + raw equivalent for any cooked portion.
 
 ```
-raw=2146g, cooked=1600g, protein=31g/100g raw
-→ 200g cooked chicken ≡ 268g raw → 83g protein
+raw=2146g, cooked=1600g, protein=22.5g/100g raw (Cronometer)
+→ 200g cooked chicken ≡ 268g raw → ~60g protein
 ```
 
 **Start here if:** you want confidence before Spring setup.
@@ -323,7 +323,7 @@ raw=2146g, cooked=1600g, protein=31g/100g raw
 - Register/login, JWT, `user_id` scoping, `requests.http` auth flow
 - **Also shipped:** `CreateBatchRequest` DTO; ingredient ownership on batch create
 
-### Slice 2 — Portion calculate + Cronometer export · **by Jul 24** ← current
+### Slice 2 — Portion calculate + Cronometer export · **by Jul 24** ✓ Complete
 
 - See [docs/slices/slice-2.md](./docs/slices/slice-2.md)
 
@@ -348,12 +348,16 @@ Totals: 52 P / 48 C / 8 F / 480 kcal
 - Document all endpoints; save collection
 - Skip if confident
 
-### Slice 4 — React: ingredients + prep session · **by Jul 28–29**
+### Slice 4 — React: ingredients + prep session · **by Jul 28–29** ← current
+
+See [docs/slices/slice-4.md](./docs/slices/slice-4.md).
 
 1. Ingredients list + add form
 2. New prep session + batches
 
 ### Slice 5 — React: portion builder + export UI · **by Jul 28–29** (ship with slice 4)
+
+See [docs/slices/slice-5.md](./docs/slices/slice-5.md).
 
 3. Portion builder with live macros
 4. Export panel with copy button
@@ -539,8 +543,9 @@ Weekday evenings (~2–3 hrs): finish current slice if the week was short — do
 
 ## Next action
 
-**Slice 2 — Portion calculate + Cronometer export.**
+**Slices 4 + 5 — React UI** (ingredients, prep session, portion builder, export panel).
 
-- Slice doc: [docs/slices/slice-2.md](./docs/slices/slice-2.md)
-- Wire [YieldCalculator](./backend/src/main/java/com/prepport/yield/YieldCalculator.java) into protected APIs; exit criterion: 200 g cooked chicken → ≈268 g raw + export text block.
-- Auth and user scoping from 1b carry forward — new portion routes are already behind `anyRequest().authenticated()`.
+- Slice 4: [docs/slices/slice-4.md](./docs/slices/slice-4.md) — auth, ingredients, prep + batches (no `frontend/` yet; add CORS for Vite).
+- Slice 5: [docs/slices/slice-5.md](./docs/slices/slice-5.md) — portion calculate + export copy on slice 2 APIs.
+- Agent handoff: [docs/slices/slice-4-agent-handoff.md](./docs/slices/slice-4-agent-handoff.md)
+- Slice 2 (API): [docs/slices/slice-2.md](./docs/slices/slice-2.md) ✓

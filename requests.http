@@ -39,10 +39,10 @@ Authorization: Bearer {{token}}
 {
   "name": "Chicken Breast, raw",
   "macroBasis": "RAW",
-  "proteinPer100g": 31.0,
+  "proteinPer100g": 22.5,
   "carbsPer100g": 0.0,
-  "fatPer100g": 3.6,
-  "kcalPer100g": 165.0,
+  "fatPer100g": 2.6,
+  "kcalPer100g": 120.0,
   "notes": "From Cronometer Data"
 }
 
@@ -62,6 +62,7 @@ Authorization: Bearer {{token}}
 }
 
 ### Add chicken batch to session (use session id from above)
+# @name createBatch
 POST {{baseUrl}}/api/prep-sessions/1/batches
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -72,9 +73,35 @@ Authorization: Bearer {{token}}
   "cookedWeightG": 1600
 }
 
+@batchId = {{createBatch.response.body.id}}
+
 ### Read session back with batches
 GET {{baseUrl}}/api/prep-sessions/1
 Authorization: Bearer {{token}}
+
+### Portion calculate — 200g cooked chicken (expect cronometerG ≈ 268.25, protein ≈ 60.4)
+POST {{baseUrl}}/api/portion/calculate
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "batchId": {{batchId}},
+  "cookedGrams": 200
+}
+
+### Portion export — Cronometer copy-paste block (text/plain response)
+POST {{baseUrl}}/api/portion/export
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "lines": [
+    {
+      "batchId": {{batchId}},
+      "cookedGrams": 200
+    }
+  ]
+}
 
 ### Protected route without token (expect 401 or 403)
 GET {{baseUrl}}/api/ingredients

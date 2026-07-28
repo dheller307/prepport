@@ -1,16 +1,16 @@
 # Slice 2 — Portion calculate + Cronometer export
 
-**Status:** Not started · **Next after:** [slice-1b](./slice-1b.md) ✓
+**Status:** Complete (Jul 2026) · **Next:** [slice 4](./slice-4.md) (+ [slice 5](./slice-5.md) UI) — see [PLAN.md](../../PLAN.md)
 
 **Target:** Jul 24 · Wire `YieldCalculator` into protected APIs; deliver copy-paste export (core product value).
 
 ## Done when
 
-- [ ] `POST /api/portion/calculate` — `{ batchId, cookedGrams }` → raw equivalent + macros (and totals if multi-line later)
-- [ ] Chicken scenario: 200 g cooked from batch (2146 raw / 1600 cooked) → **≈268 g raw** equivalent
-- [ ] `GET /api/portion/export` (or POST with portion lines) — formatted Cronometer-ready text block
-- [ ] Endpoints protected (JWT); batch access scoped to logged-in user (same pattern as ingredients)
-- [ ] `requests.http` updated with calculate + export examples using `Authorization: Bearer …`
+- [x] `POST /api/portion/calculate` — `{ batchId, cookedGrams }` → raw equivalent + macros (and totals if multi-line later)
+- [x] Chicken scenario: 200 g cooked from batch (2146 raw / 1600 cooked) → **≈268 g raw** equivalent (Cronometer log weight); macros use your ingredient per 100g (smoke: **22.5 P / 0 C / 2.6 F / 120 kcal** per 100g raw from Cronometer)
+- [x] `GET /api/portion/export` (or POST with portion lines) — formatted Cronometer-ready text block (`POST /api/portion/export`)
+- [x] Endpoints protected (JWT); batch access scoped to logged-in user (same pattern as ingredients)
+- [x] `requests.http` updated with calculate + export examples using `Authorization: Bearer …`
 
 ## Context from slice 1b (read first)
 
@@ -54,7 +54,7 @@ Learning split:
 
 ```
 POST   /api/portion/calculate
-GET    /api/portion/export
+POST   /api/portion/export
 ```
 
 ## Not in scope

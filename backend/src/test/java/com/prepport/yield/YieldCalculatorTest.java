@@ -36,9 +36,9 @@ public class YieldCalculatorTest {
     }
 
     @Test
-    @DisplayName("Protein for 200g matching basis chicken is ~61.00g")
-    void proteinForMatchingBasis_chickenPortion_returns61() {
-        double result = calc.calculateForMatchingBasis(200, 30.5);
-        assertEquals(61.00, result, 0.01);
+    @DisplayName("Protein via matching basis (268.25g raw-equiv, 22.5g/100g raw) is ~60.36g")
+    void calculateForMatchingBasis_rawChickenMacros_returns6036() {
+        double result = calc.calculateForMatchingBasis(268.25, 22.5);
+        assertEquals(60.36, result, 0.01);
     }
 }
