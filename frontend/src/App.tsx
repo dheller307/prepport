@@ -1,26 +1,54 @@
 import { useState } from "react";
-import { getToken } from "./auth/token";
+import { clearToken, getToken } from "./auth/token";
 import { LoginForm } from "./auth/Login";
 import { RegisterForm } from "./auth/Register";
+import { ProtectedRoute } from "./auth/ProtectedRoute";
+import { Ingredients } from "./pages/Ingredients";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(getToken() !== null);
-
-  if (!isLoggedIn) {
-    return (
-      <>
-        <LoginForm onSuccess={() => setIsLoggedIn(true)} />
-        <p>Don't have an account? <button onClick={() => setIsLoggedIn(false)}>Register</button></p>
-      </>
-    );
+  const [authView, setAuthView] = useState<"login" | "register">("login");
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    clearToken();
   }
 
   return (
-    <main className="app">
-      <h1>PrepPort</h1>
-      <p>Slice 4 — ingredients + prep session</p>
-    </main>
-  )
+    <ProtectedRoute
+      fallback={
+        <main className="app">
+            {authView === "login" ? (
+              <>
+                <LoginForm onSuccess={() => setIsLoggedIn(true)} />
+                <p>
+                  Don't have an account?{" "}
+                  <button type="button" onClick={() => setAuthView("register")}>
+                    Register
+                  </button>
+                </p>
+              </>
+            ) : (
+              <>
+                <RegisterForm onSuccess={() => setIsLoggedIn(true)} />
+                <p>
+                  Already have an account?{" "}
+                  <button type="button" onClick={() => setAuthView("login")}>
+                    Login
+                  </button>
+                </p>
+              </>
+            )}
+          </main>
+        }
+      >
+        <main className="app">
+          <h1>PrepPort</h1>
+          <p>Slice 4 — ingredients + prep session</p>
+          <button onClick={handleLogout}>Logout</button>
+          <Ingredients />
+        </main>
+      </ProtectedRoute>
+  );
 }
 
-export default App
+export default App;
