@@ -4,6 +4,7 @@ import { LoginForm } from "./auth/Login";
 import { RegisterForm } from "./auth/Register";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { Ingredients } from "./pages/Ingredients";
+import { PrepSessions } from "./pages/PrepSessions";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(getToken() !== null);
@@ -46,6 +47,7 @@ function App() {
           <p>Slice 4 — ingredients + prep session</p>
           <button onClick={handleLogout}>Logout</button>
           <Ingredients />
+          <PrepSessions />
         </main>
       </ProtectedRoute>
   );

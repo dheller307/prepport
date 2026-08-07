@@ -6,7 +6,8 @@ type IngredientForm = Omit<Ingredient, 'id' | 'createdAt'>
 
 export function Ingredients() {
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const [loadingError, setLoadingError] = useState<string | null>(null);
+    const [submissionError, setSubmissionError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     
@@ -22,7 +23,7 @@ export function Ingredients() {
 
     useEffect(() => {
         async function loadIngredients() {
-            setError(null);
+            setLoadingError(null);
             setIsLoading(true);
             try {
                 const response = await api<Ingredient[]>('/api/ingredients', {
@@ -31,18 +32,17 @@ export function Ingredients() {
                 });
                 setIngredients(response);
             } catch (error) {
-                setError(error instanceof Error ? error.message : 'Failed to load ingredients');
+                setLoadingError(error instanceof Error ? error.message : 'Failed to load ingredients');
             } finally {
                 setIsLoading(false);
             }
         }
-
         loadIngredients();
     }, []);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError(null);
+        setSubmissionError(null);
         setIsSubmitting(true);
         try {
             const response = await api<Ingredient>('/api/ingredients', {
@@ -61,7 +61,7 @@ export function Ingredients() {
                 notes: '',
             });
         } catch (error) {
-            setError(error instanceof Error ? error.message : 'Failed to add ingredient');
+            setSubmissionError(error instanceof Error ? error.message : 'Failed to add ingredient');
         } finally {
             setIsSubmitting(false);
         }
@@ -100,9 +100,11 @@ export function Ingredients() {
                 </div>
                 <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Adding...' : 'Add Ingredient'}</button>
             </form>
-            {error && <p>{error}</p>}
-            {isLoading && <p>Loading...</p>}
-            {!isLoading && !error && (
+            {submissionError && <p>{submissionError}</p>}
+            {loadingError && <p>{loadingError}</p>}
+            {isLoading && <p>Loading ingredients...</p>}
+            {!isLoading && !loadingError && ingredients.length === 0 && <p>No ingredients yet</p>}
+            {!isLoading && !loadingError && ingredients.length > 0 && (
                 <ul>
                     {ingredients.map((ingredient) => (
                         <li key={ingredient.id}>{ingredient.name}</li>
@@ -111,5 +113,4 @@ export function Ingredients() {
             )}
         </div>
     )
-
 }
