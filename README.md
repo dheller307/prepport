@@ -2,7 +2,7 @@
 
 Component-based meal prep companion for Cronometer users. Cook protein, carbs, and vegetables separately; track raw→cooked yield; export Cronometer-ready portions.
 
-**Status:** Slice 2 complete — portion calculate + Cronometer export API. **Current:** [Slice 4](./docs/slices/slice-4.md) + [Slice 5](./docs/slices/slice-5.md) (React UI, Jul 28–29) → deploy 8+9 (Jul 31 worst case).
+**Status:** Slice 4 complete — React auth, ingredients, prep sessions, batches. **Current:** [Slice 5](./docs/slices/slice-5.md) (portion builder + export UI) → deploy 8+9 (Jul 31 worst case).
 
 Cursor: open this folder as workspace; rules live in `.cursor/rules/`.
 
@@ -13,8 +13,9 @@ Cursor: open this folder as workspace; rules live in `.cursor/rules/`.
 - [Slice 1a — backend CRUD](./docs/slices/slice-1a.md) ✓
 - [Slice 1b — JWT auth](./docs/slices/slice-1b.md) ✓
 - [Slice 2 — portion + export](./docs/slices/slice-2.md) ✓
-- [Slice 4 — React ingredients + prep](./docs/slices/slice-4.md) ← current
-- [Slice 5 — portion builder + export UI](./docs/slices/slice-5.md)
+- [Slice 4 — React ingredients + prep](./docs/slices/slice-4.md) ✓
+- [Slice 5 — portion builder + export UI](./docs/slices/slice-5.md) ← current
+- [Slice 5 agent handoff](./docs/slices/slice-5-agent-handoff.md)
 - Stack: Java 17 · Spring Boot · PostgreSQL · React · TypeScript
 
 ## Local dev

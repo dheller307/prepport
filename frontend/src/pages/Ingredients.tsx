@@ -1,6 +1,7 @@
 import { Ingredient } from "../types/ingredient";
 import { useState, useEffect } from "react";
 import { api } from "../api/client";
+import { listIngredients } from "../api/ingredients";
 
 type IngredientForm = Omit<Ingredient, 'id' | 'createdAt'>
 
@@ -26,10 +27,7 @@ export function Ingredients() {
             setLoadingError(null);
             setIsLoading(true);
             try {
-                const response = await api<Ingredient[]>('/api/ingredients', {
-                    method: 'GET',
-                    auth: true,
-                });
+                const response = await listIngredients();
                 setIngredients(response);
             } catch (error) {
                 setLoadingError(error instanceof Error ? error.message : 'Failed to load ingredients');
@@ -97,6 +95,10 @@ export function Ingredients() {
                 <div>
                     <label htmlFor="kcalPer100g">Kcal per 100g</label>
                     <input type="number" id="kcalPer100g" step="0.1" value={form.kcalPer100g} onChange={(e) => setForm({ ...form, kcalPer100g: Number(e.target.value) })} />
+                </div>
+                <div>
+                    <label htmlFor="notes">Notes</label>
+                    <textarea id="notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
                 </div>
                 <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Adding...' : 'Add Ingredient'}</button>
             </form>

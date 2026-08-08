@@ -1,56 +1,45 @@
 # Agent handoff — Slice 4 (React: ingredients + prep)
 
-**For the next Cursor agent.** Human continues **slice 4** (and overlaps **slice 5** per PLAN).
+**Status:** Complete (Aug 2026). **Next:** [slice-5-agent-handoff.md](./slice-5-agent-handoff.md)
 
 ---
 
-## Your instructions
+## Slice 4 outcome
 
-1. **Read** [slice-4.md](./slice-4.md), [PLAN.md](../../PLAN.md) (slices 4–5), [requests.http](../../requests.http).
-2. **Pairing mode by default** — human builds; explain concepts, review diffs, scaffold Vite/`api.ts` only when asked.
-3. Do **not** silently build the full React app unless explicitly requested.
-4. **No `frontend/` yet** in repo — slice 4 starts from scaffold.
+Browser flow works: **register/login → ingredient library → prep session → batches** (raw + cooked weights). Dogfood target: chicken 22.5/0/2.6/120 per 100g raw, session, batch 2146/1600.
 
 ---
 
-## Read first (order)
+## What was built
 
-1. [README.md](../../README.md) — status and quick links  
-2. [docs/slices/slice-4.md](./slice-4.md) — done-when, APIs, work order  
-3. [docs/slices/slice-5.md](./slice-5.md) — portion/export UI (after slice 4)  
-4. [docs/slices/slice-2.md](./slice-2.md) — portion APIs (slice 5)  
-5. [docs/slices/slice-1b.md](./slice-1b.md) — JWT behavior  
-6. [requests.http](../../requests.http) — canonical API smoke flow  
-
----
-
-## Slice 4 goal
-
-Browser flow: **register/login → ingredient library → prep session → batches** (raw + cooked weights). Portion/export UI is **slice 5**.
-
----
-
-## Backend state (slice 2 complete)
-
-| Area | Status |
+| Area | Notes |
 |------|--------|
-| JWT auth + user-scoped CRUD | ✓ |
-| `POST /api/portion/calculate`, `POST /api/portion/export` | ✓ (slice 5 UI) |
-| **CORS for Vite dev** | **Not configured** — likely needed in slice 4 |
-| **`frontend/`** | **Missing** — create in slice 4 |
+| `frontend/` | Vite + React 18 + TS; `VITE_API_URL` in `.env` |
+| Auth | `Login`, `Register`, `ProtectedRoute`, `token.ts`, logout in `App` |
+| `api/client.ts` | `api<T>()` with Bearer, 401 → `clearToken()` |
+| `api/ingredients.ts` | `listIngredients()` — shared by Ingredients + PrepSessionDetail |
+| CORS | `SecurityConfig.corsConfigurationSource()` for `http://localhost:5173` |
+| Pages | `Ingredients`, `PrepSessions`, `PrepSessionDetail` |
 
 ---
 
-## Conventions
+## Conventions (carry to slice 5)
 
-- API base: `http://localhost:8080` (or `VITE_API_URL`)  
-- Token: `Authorization: Bearer <jwt>` on protected routes  
-- Ingredient `macroBasis`: `RAW` \| `COOKED`  
-- MVP batches: always `rawWeightG` + `cookedWeightG`  
-- Shell: prefix with `rtk` per workspace rules  
+- API base: `import.meta.env.VITE_API_URL` (no `/api` suffix on base)
+- Pairing mode: human builds; agent explains/reviews; minimal scaffold only when asked
+- Shell: prefix with `rtk`
+- Split load vs submit state on data pages (`isLoadingSession` / `isSubmitting`, etc.)
 
 ---
 
-## Human opener (suggested)
+## Known quirks
+
+- Bad login can return **403** with empty body (not 401 JSON) — backend behavior, not frontend bug
+- `PrepSessions` renders create form above detail when viewing a session — UX polish deferred
+- No React Router yet — detail via `selectedSessionId` in `PrepSessions`
+
+---
+
+## Human opener (historical)
 
 > PrepPort slice 4 — read `docs/slices/slice-4-agent-handoff.md`. Familiarize / scaffold Vite only when I ask.

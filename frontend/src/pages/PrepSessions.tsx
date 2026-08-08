@@ -1,9 +1,11 @@
 import { CreatePrepSessionRequest, PrepSession } from "../types/prepSession"
 import { useState, useEffect } from "react"
 import { api } from "../api/client"
+import { PrepSessionDetail } from "./PrepSessionDetail";
 
 export function PrepSessions() {
     const [prepSessions, setPrepSessions] = useState<PrepSession[]>([]);
+    const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
     const [loadingError, setLoadingError] = useState<string | null>(null);
     const [submissionError, setSubmissionError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -78,13 +80,15 @@ export function PrepSessions() {
             {loadingError && <p>{loadingError}</p>}
             {isLoading && <p>Loading prep sessions...</p>}
             {!isLoading && !loadingError && prepSessions.length === 0 && <p>No prep sessions yet</p>}
-            {!isLoading && !loadingError && prepSessions.length > 0 && (
+            {selectedSessionId !== null && <PrepSessionDetail id={selectedSessionId} onBack={() => setSelectedSessionId(null)} />}
+            {!isLoading && !loadingError && prepSessions.length > 0 && selectedSessionId === null && (
                 <ul>
                     {prepSessions.map((prepSession) => (
                         <li key={prepSession.id}>
                             {prepSession.sessionDate}
                             {prepSession.notes ? ` - ${prepSession.notes}` : ''}
                             {prepSession.batches?.length ? ` - (${prepSession.batches.length} batches)` : ''}
+                            <button onClick={() => setSelectedSessionId(prepSession.id ?? null)}>View</button>
                         </li>
                     ))}
                 </ul>
