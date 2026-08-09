@@ -1,7 +1,7 @@
 import { Ingredient } from "../types/ingredient";
 import { useState, useEffect } from "react";
-import { api } from "../api/client";
 import { listIngredients } from "../api/ingredients";
+import { apiJson } from "../api/client";
 
 type IngredientForm = Omit<Ingredient, 'id' | 'createdAt'>
 
@@ -43,7 +43,7 @@ export function Ingredients() {
         setSubmissionError(null);
         setIsSubmitting(true);
         try {
-            const response = await api<Ingredient>('/api/ingredients', {
+            const response = await apiJson<Ingredient>('/api/ingredients', {
                 method: 'POST',
                 body: form,
                 auth: true,

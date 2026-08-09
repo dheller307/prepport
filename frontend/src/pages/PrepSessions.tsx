@@ -1,6 +1,6 @@
 import { CreatePrepSessionRequest, PrepSession } from "../types/prepSession"
 import { useState, useEffect } from "react"
-import { api } from "../api/client"
+import { apiJson } from "../api/client"
 import { PrepSessionDetail } from "./PrepSessionDetail";
 
 export function PrepSessions() {
@@ -26,7 +26,7 @@ export function PrepSessions() {
             setLoadingError(null);
             setIsLoading(true);
             try {
-                const response = await api<PrepSession[]>('/api/prep-sessions', {
+                const response = await apiJson<PrepSession[]>('/api/prep-sessions', {
                     method: 'GET',
                     auth: true,
                 });
@@ -45,7 +45,7 @@ export function PrepSessions() {
         setSubmissionError(null);
         setIsSubmitting(true);
         try {
-            const response = await api<PrepSession>('/api/prep-sessions', {
+            const response = await apiJson<PrepSession>('/api/prep-sessions', {
                 method: 'POST',
                 body: form,
                 auth: true,

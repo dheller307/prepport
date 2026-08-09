@@ -5,6 +5,7 @@ import { RegisterForm } from "./auth/Register";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { Ingredients } from "./pages/Ingredients";
 import { PrepSessions } from "./pages/PrepSessions";
+import { PortionBuilder } from "./pages/PortionBuilder";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(getToken() !== null);
@@ -48,6 +49,7 @@ function App() {
           <button onClick={handleLogout}>Logout</button>
           <Ingredients />
           <PrepSessions />
+          <PortionBuilder />
         </main>
       </ProtectedRoute>
   );

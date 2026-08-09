@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { api } from "../api/client";
+import { apiJson } from "../api/client";
 import { AuthResponse } from "../types/auth";
 import { setToken } from "../auth/token";
 
@@ -18,7 +18,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         setError(null);
         setIsLoading(true);
         try {
-            const response = await api<AuthResponse>('/api/auth/login', {
+            const response = await apiJson<AuthResponse>('/api/auth/login', {
                 method: 'POST',
                 body: { email, password },
                 auth: false,

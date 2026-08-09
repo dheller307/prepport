@@ -9,7 +9,7 @@ type ApiOptions = {
   auth?: boolean
 }
 
-export async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {
+async function request<T>(path: string, options: ApiOptions = {}, responseType: 'json' | 'text' = 'json'): Promise<T> {
   const { method = 'GET', body, auth = true } = options
 
   const headers: Record<string, string> = {
@@ -37,5 +37,17 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
     throw new Error(message || `Request failed (${response.status})`)
   }
 
-  return response.json() as Promise<T>
+  if (responseType === 'json') {
+    return (await response.json()) as T
+  } else {
+    return (await response.text()) as T
+  }
+}
+
+export async function apiJson<T>(path: string, options: ApiOptions = {}): Promise<T> {
+  return request<T>(path, options, 'json')
+}
+
+export async function apiText(path: string, options: ApiOptions = {}): Promise<string> {
+  return request<string>(path, options, 'text')
 }

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { PrepSession } from "../types/prepSession";
 import { Batch, CreateBatchRequest } from "../types/batch";
 import { Ingredient } from "../types/ingredient";
-import { api } from "../api/client";
+import { apiJson } from "../api/client";
 import { listIngredients } from "../api/ingredients";
 
 type PrepSessionDetailProps = {
@@ -47,7 +47,7 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
             setLoadingErrorSession(null);
             setIsLoadingSession(true);
             try {
-                const response = await api<PrepSession>(`/api/prep-sessions/${id}`, {
+                const response = await apiJson<PrepSession>(`/api/prep-sessions/${id}`, {
                     method: 'GET',
                     auth: true,
                 });
@@ -66,7 +66,7 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
         setSubmissionError(null);
         setIsSubmitting(true);
         try {
-            const response = await api<Batch>(`/api/prep-sessions/${id}/batches`, {
+            const response = await apiJson<Batch>(`/api/prep-sessions/${id}/batches`, {
                 method: 'POST',
                 body: form,
                 auth: true,

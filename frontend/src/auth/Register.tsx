@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { api } from "../api/client";
+import { apiJson } from "../api/client";
 import { AuthResponse } from "../types/auth";
 import { setToken } from "../auth/token";
 
@@ -24,7 +24,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             return;
         }
         try {
-            const response = await api<AuthResponse>('/api/auth/register', {
+            const response = await apiJson<AuthResponse>('/api/auth/register', {
                 method: 'POST',
                 body: { email, password },
                 auth: false,
