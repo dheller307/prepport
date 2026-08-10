@@ -348,14 +348,14 @@ Totals: 52 P / 48 C / 8 F / 480 kcal
 - Document all endpoints; save collection
 - Skip if confident
 
-### Slice 4 — React: ingredients + prep session · **by Jul 28–29** ← current
+### Slice 4 — React: ingredients + prep session · **by Jul 28–29** ✓ Complete
 
 See [docs/slices/slice-4.md](./docs/slices/slice-4.md).
 
 1. Ingredients list + add form
 2. New prep session + batches
 
-### Slice 5 — React: portion builder + export UI · **by Jul 28–29** (ship with slice 4)
+### Slice 5 — React: portion builder + export UI · **by Jul 28–29** ✓ Complete
 
 See [docs/slices/slice-5.md](./docs/slices/slice-5.md).
 
@@ -372,7 +372,7 @@ Mobile-friendly (Sunday at the scale).
 
 - Clone starter foods from JSON templates
 
-### Slice 8 — Deploy · **by Jul 31** (worst case; aim earlier after 4+5)
+### Slice 8 — Deploy · **by Jul 31** (worst case; aim earlier) ← current
 
 - Docker Compose, Render/Railway, env vars, auth hardened for production
 
@@ -543,9 +543,9 @@ Weekday evenings (~2–3 hrs): finish current slice if the week was short — do
 
 ## Next action
 
-**Slices 4 + 5 — React UI** (ingredients, prep session, portion builder, export panel).
+**Slice 8 + 9 — Deploy + README/resume** (product MVP local is done: slices 2 + 4 + 5).
 
-- Slice 4: [docs/slices/slice-4.md](./docs/slices/slice-4.md) — auth, ingredients, prep + batches (no `frontend/` yet; add CORS for Vite).
-- Slice 5: [docs/slices/slice-5.md](./docs/slices/slice-5.md) — portion calculate + export copy on slice 2 APIs.
-- Agent handoff: [docs/slices/slice-4-agent-handoff.md](./docs/slices/slice-4-agent-handoff.md)
+- Slice 5: [docs/slices/slice-5.md](./docs/slices/slice-5.md) ✓ — portion builder + export UI.
+- Slice 4: [docs/slices/slice-4.md](./docs/slices/slice-4.md) ✓ — auth, ingredients, prep + batches.
 - Slice 2 (API): [docs/slices/slice-2.md](./docs/slices/slice-2.md) ✓
+- Agent handoff: [docs/slices/slice-5-agent-handoff.md](./docs/slices/slice-5-agent-handoff.md)

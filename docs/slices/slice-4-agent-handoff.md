@@ -1,6 +1,6 @@
 # Agent handoff — Slice 4 (React: ingredients + prep)
 
-**Status:** Complete (Aug 2026). **Next:** [slice-5-agent-handoff.md](./slice-5-agent-handoff.md)
+**Status:** Complete (Aug 2026). **Next:** [slice-5-agent-handoff.md](./slice-5-agent-handoff.md) ✓ → [PLAN.md](../../PLAN.md) slice 8 (deploy)
 
 ---
 

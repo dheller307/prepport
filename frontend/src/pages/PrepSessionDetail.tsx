@@ -111,7 +111,7 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
             {!isLoadingSession && !loadingErrorSession && prepSession && (
                 <div>
                     <h2>{prepSession.sessionDate}</h2>
-                    {prepSession.notes && <p>{prepSession.notes}</p>}
+                    {prepSession.notes && <p>Notes: {prepSession.notes}</p>}
                     {!prepSession.batches?.length ? (
                         <p>No batches yet</p>
                     ) : (

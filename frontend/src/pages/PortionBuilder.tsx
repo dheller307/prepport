@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { apiJson } from '../api/client';
 import { PrepSession } from '../types/prepSession';
 import { PortionCalculateRequest, PortionCalculateResponse } from '../types/portion';
@@ -25,7 +25,7 @@ export function PortionBuilder() {
                 const response = await apiJson<PrepSession[]>('/api/prep-sessions', { method: 'GET', auth: true });
                 setPrepSessions(response);
             } catch (prepSessionLoadError) {
-            setPrepSessionLoadingError(prepSessionLoadError instanceof Error ? prepSessionLoadError.message : 'Failed to load prep sessions');
+                setPrepSessionLoadingError(prepSessionLoadError instanceof Error ? prepSessionLoadError.message : 'Failed to load prep sessions');
             } finally {
                 setPrepSessionIsLoading(false);
             }
@@ -70,11 +70,13 @@ export function PortionBuilder() {
         return lines.filter((line) => line.batchId > 0 && line.cookedGrams > 0);
     }
 
+    const validLines = getValidLines();
+
     async function handleExport() {
         setExportError(null);
         setIsExporting(true);
         try {
-            const response = await exportPortion({lines: getValidLines()});
+            const response = await exportPortion({lines: validLines});
             setExportText(response);
         } catch (exportError) {
             setExportError(exportError instanceof Error ? exportError.message : 'Failed to export portion');
@@ -84,26 +86,46 @@ export function PortionBuilder() {
         }
     }
 
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    
     async function handleCopy() {
-        navigator.clipboard.writeText(exportText ?? '').then(() => {
+        try {
+            await navigator.clipboard.writeText(exportText ?? '');
             setCopyFeedback('Copied to clipboard');
-        }).catch(() => {
+        } catch (copyError) {
             setCopyFeedback('Failed to copy to clipboard');
-        });
-        setTimeout(() => {
-            setCopyFeedback(null);
-        }, 3000);
+        } finally {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+            timerRef.current = setTimeout(() => {
+                setCopyFeedback(null);
+            }, 3000);
+        }
     }
+
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+        };
+    }, []);
+
+    const batches = prepSessions.flatMap((session) => session.batches ?? []);
 
     return (
         <div>
             <h1>Portion Builder</h1>
             {prepSessionLoadingError && <p>{prepSessionLoadingError}</p>}
             {prepSessionIsLoading && <p>Loading prep sessions...</p>}
-            {!prepSessionIsLoading && !prepSessionLoadingError && prepSessions.length < 1 && (
-                <p>Create a prep session with batches to build portions first</p>
+            {!prepSessionIsLoading && !prepSessionLoadingError && prepSessions.length === 0 && (
+                <p>No prep sessions found. Create a prep session first.</p>
             )}
-            {!prepSessionIsLoading && !prepSessionLoadingError && (
+            {!prepSessionIsLoading && !prepSessionLoadingError && prepSessions.length > 0 && batches.length < 1 && (
+                <p>No batches found for any prep session. Create a batch first.</p>
+            )}
+            {!prepSessionIsLoading && !prepSessionLoadingError && prepSessions.length > 0 && batches.length > 0 && (
             <>
                 <section>
                     <h2>Portions</h2>
@@ -112,16 +134,18 @@ export function PortionBuilder() {
                     {lines.length > 0 && (
                         <ul>
                             {lines.map((line, index) => (
-                                <li key={index}>
+                                <li key={index} className='portion-line'>
                                     <select value={line.batchId || ''} onChange={(e) => updateLineBatch(index, Number(e.target.value))}>
                                         <option value="">Select a batch</option>
-                                        {prepSessions.flatMap((session) => session.batches ?? []).map((batch) => (
+                                        {batches.map((batch) => (
                                             <option key={batch.id} value={batch.id}>{batch.ingredient.name} - {batch.createdAt?.split('T')[0]} - {batch.rawWeightG}g/{batch.cookedWeightG}g</option>
                                         ))}
                                     </select>
                                     <input type="number" value={line.cookedGrams} onChange={(e) => updateLineGrams(index, Number(e.target.value))} />
-                                    <button onClick={() => calculateLine(index)}>Calculate</button>
-                                    <button onClick={() => handleRemoveLine(index)}>Remove</button>
+                                    <div className='portion-line-actions'>
+                                        <button onClick={() => calculateLine(index)} disabled={isCalculating}>{isCalculating ? 'Calculating...' : 'Calculate'}</button>
+                                        <button onClick={() => handleRemoveLine(index)}>Remove</button>
+                                    </div>
                                     {results[index] && <p>{results[index].cronometerG}g</p>}
                                     {results[index] && <p>P: {results[index].proteinG}g - F: {results[index].fatG}g - C: {results[index].carbsG}g - Cal: {results[index].kcal}kcal</p>}
                                 </li>
@@ -133,12 +157,11 @@ export function PortionBuilder() {
                 </section>
                 <section>
                     <h2>Export</h2>
-                    
-                    <button onClick={handleExport} disabled={isExporting || getValidLines().length === 0}>{isExporting ? 'Exporting...' : 'Export'}</button>
+                    <button onClick={handleExport} disabled={isExporting || validLines.length === 0}>{isExporting ? 'Exporting...' : 'Export'}</button>
                     {exportError && <p>{exportError}</p>}
                     {exportText && (
                         <>
-                            <pre>{exportText}</pre>
+                            <pre className='export-pre'>{exportText}</pre>
                             <button onClick={handleCopy} disabled={!exportText}>Copy</button>
                             {copyFeedback && <p>{copyFeedback}</p>}
                         </>

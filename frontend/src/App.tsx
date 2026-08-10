@@ -45,7 +45,6 @@ function App() {
       >
         <main className="app">
           <h1>PrepPort</h1>
-          <p>Slice 4 — ingredients + prep session</p>
           <button onClick={handleLogout}>Logout</button>
           <Ingredients />
           <PrepSessions />
