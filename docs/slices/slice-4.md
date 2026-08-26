@@ -1,6 +1,6 @@
 # Slice 4 — React: ingredients + prep session
 
-**Status:** Complete (Aug 2026) · **Next:** [slice 5](./slice-5.md) ✓ → [PLAN.md](../../PLAN.md) slice 8 (deploy)
+**Status:** Complete (Aug 2026) · **Next:** [slice 5](./slice-5.md) ✓ → [PLAN.md](../../PLAN.md) slice 6 (AWS deploy)
 
 **Target:** Jul 28–29 (ship with [slice 5](./slice-5.md)) · First UI on top of the slice 2 API; Sunday weigh-in flow without Postman.
 
@@ -68,7 +68,7 @@ frontend/src/
 
 - Portion builder, live macro preview, export copy button — [slice 5](./slice-5.md)
 - Meal / ingredient templates (slices 6–7)
-- Deploy, production auth hardening — slice 8
+- Deploy, production auth hardening — slice 6
 - Replacing entities with dedicated response DTOs on backend
 
 ## Local dev

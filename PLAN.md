@@ -38,7 +38,7 @@ PrepPort eliminates the Notes + mental math layer.
 | Backend | Java 17, Spring Boot 3, Spring Web, Spring Data JPA, Spring Security (JWT) |
 | Database | PostgreSQL (SQLite OK for local dev only) |
 | Frontend | React 18 + TypeScript + Vite |
-| Deploy | Docker Compose → Render / Railway / Fly.io |
+| Deploy | Docker Compose (local Postgres) → **AWS Lightsail** (Slice 6) |
 | Tests | JUnit 5 for yield math; a few API integration tests |
 
 **Planned repo layout (create when scaffolding):**
@@ -111,8 +111,9 @@ Legend:
 | **React** | Minimal (BMI JS) | **Short prep** | Slice 4 | Components, `useState`, `useEffect`, `fetch` — 2–3 hrs before UI slice |
 | **Vite** | New | **Scaffold + study** | Slice 4 | I scaffold; you learn `npm run dev` and folder layout |
 | **CSS / layout** | Light | **Quick intro** | Slice 4 | Plain CSS or a minimal component library — don't learn Tailwind deeply unless you want to |
-| **Docker Compose** | Tutorial exposure | **Defer** | Slice 8 | Copy-adapt compose file when deploying |
-| **Deploy (Render etc.)** | New | **Defer** | Slice 8 | Step-by-step when backend + frontend run locally |
+| **Docker Compose** | Tutorial exposure | **Defer** | Slice 6 | Local Postgres already; copy-adapt when packaging for AWS |
+| **Deploy (AWS Lightsail)** | New | **In progress** | Slice 6 | One Lightsail box + Docker Compose; agent walks console for AWS-new user |
+| **React Router / multi-page UI** | Light | **Quick intro** | Slice 7 | After a live deploy; polish navigation before README screenshots |
 
 ### Recommended order (adjusted for learning)
 
@@ -138,7 +139,9 @@ Slice 4+  React UI                   ← after backend is trustworthy
 | 1b | Security config skeleton, JWT filter outline | Register/login endpoints, protect routes |
 | 2 | Export string format spec | `PortionService`, controller, tests |
 | 4 | Vite + React folder, `fetch` wrapper with auth header | Forms and pages one at a time |
-| 7 | `docker-compose.yml` template | Env vars, deploy clicks |
+| 6 | Prod config, Dockerfile, compose, Nginx sketch, Lightsail walkthrough | Prod properties, Docker files, console clicks, SSH, secrets, smoke on live URL |
+| 7 | Router layout + nav pattern | Multi-page UX; you type routes and page polish |
+| 8 | README outline (screenshots, setup, demo URL) | Write README; push/pin GitHub |
 
 ### Optional prep (only if you want homework before week of Jun 29)
 
@@ -277,26 +280,26 @@ USDA FDC API is free: https://fdc.nal.usda.gov/api-guide.html
 
 ## Build slices (mapped to calendar)
 
-Build in **vertical slices**, not horizontal layers. Dates revised **Jul 2026** after slice 1b.
+Build in **vertical slices**, not horizontal layers. Dates revised **Aug 2026** after product MVP (slices 2 + 4 + 5).
 
 ### MVP tiers (what “done” means)
 
 | Tier | Slices | You have… |
 |------|--------|-----------|
 | **Product MVP** (local) | 0, 1a, 1b ✓ + **2** + **4** + **5** | Full Sunday flow in the browser: prep → portion → Cronometer export |
-| **Resume MVP** (deployed) | Product MVP + **8** + **9** | Live demo URL, README, GitHub pin for applications |
+| **Resume MVP** (shipped) | Product MVP + **6** + **7** + **8** | AWS live demo, multi-page UI, README + GitHub pin for applications |
+| **Ongoing** | **9** | Polish and extra features in free time during applications / interviews |
 
-Slices **3**, **6**, **7** optional — polish while applying, not blockers.
+Slice **3** remains optional (API comfort). Meal templates, ingredient templates, USDA search live in **slice 9** — not blockers for the resume ship.
 
-**Deadlines (revised):**
+**Deadlines (revised Aug 2026):**
 
 | Target | Slice(s) |
 |--------|----------|
-| **Jul 24** | 2 — portion calculate + export API |
-| **Jul 28–29** | 4 + 5 — React UI (ingredients, prep, portion builder, export) |
-| **Jul 31** (worst case) | 8 + 9 — deploy + README/resume link |
-
-Then iterate (templates, tests, add-ins) **while applications go out** (fall intern recruiting peak Sept–Nov 2026).
+| **Jul 24** | 2 — portion calculate + export API *(done)* |
+| **Jul 28–29** | 4 + 5 — React UI *(done)* |
+| **Aug 2026** | **6** AWS deploy → **7** UI/UX (router, clearer flow) → **8** GitHub + README |
+| **Sept–Nov 2026** | **9** — polish while applications go out |
 
 ### Slice 0 — Yield math · **by Jun 29**
 
@@ -364,21 +367,39 @@ See [docs/slices/slice-5.md](./docs/slices/slice-5.md).
 
 Mobile-friendly (Sunday at the scale).
 
-### Slice 6 — Meal templates · **optional (cut if behind)**
+### Slice 6 — AWS deploy (Lightsail) · **Aug 2026** ← current
 
-- Save "Standard lunch"; reload against current week's batches
+See [docs/slices/slice-6.md](./docs/slices/slice-6.md) · agent: [docs/slices/slice-6-agent-handoff.md](./docs/slices/slice-6-agent-handoff.md)
 
-### Slice 7 — Ingredient templates · **optional (cut if behind)**
+**Chosen:** **Amazon Lightsail** — one Linux instance (~1 GB RAM), Docker Compose (Postgres + API), Nginx for static frontend + HTTPS. ~$120 AWS credits (Lightsail eligible). User is **new to AWS**; agent walks console/SSH step-by-step.
 
-- Clone starter foods from JSON templates
+**Phases:** (0) billing ✓ → (1) `application-prod.properties` + CORS env → (2) Dockerfile + prod compose → (3) Lightsail instance + static IP + firewall → (4) deploy API on server → (5) frontend build + Nginx + HTTPS → (6) persistence proof + Sunday smoke.
 
-### Slice 8 — Deploy · **by Jul 31** (worst case; aim earlier) ← current
+- Live demo URL (HTTPS); `GET /health` without auth
+- Env on server only: `JWT_SECRET`, DB credentials, `PREPPORT_CORS_ORIGINS` — never in git
+- Frontend built with `VITE_API_URL` pointing at public API
+- Local `docker-compose.yml` stays Postgres-only for dev
 
-- Docker Compose, Render/Railway, env vars, auth hardened for production
+### Slice 7 — UI / UX · **after slice 6**
 
-### Slice 9 — README + resume · **by Jul 31** (ship with slice 8)
+- Multi-page app (React Router): auth, ingredients, prep sessions, portion builder as separate routes — not one stacked page
+- Clearer Sunday flow and copy so the app makes sense to a recruiter (and to you at the scale)
+- Mobile-friendly layout; error states and nav that match the real workflow
 
-- Screenshots, setup instructions, live demo link, GitHub pin
+### Slice 8 — GitHub + README · **after slice 7** (screenshots of the polished UI)
+
+- Push current work; pin the repo
+- README: what it is, stack, local setup, live demo URL, screenshots
+- Resume bullet + demo link ready to send with applications
+
+### Slice 9 — Future polish · **free time during app / interview season**
+
+Not required to put PrepPort on the resume. Pick from:
+
+- Meal templates (“Standard lunch” against this week’s batches)
+- Ingredient templates (clone starter foods from JSON)
+- Extra tests, CSV export, post-cook add-ins, USDA search
+- Further UI polish after recruiter feedback
 
 ---
 
@@ -480,30 +501,30 @@ PrepPort satisfies the full-stack requirements from the [internship prep plan](c
 | Java + Spring Boot | Backend |
 | React + TypeScript | Frontend |
 | PostgreSQL | Production DB |
-| Docker Compose + cloud deploy | Slice 8 |
-| README + 2–3 API tests | Slice 0 + 8–9 |
+| Docker Compose + cloud deploy | Slice 6 (AWS) |
+| README + 2–3 API tests | Slice 0 + 8 |
 | Auth | JWT (Slice 1b) |
 | 2–3 CRUD entities | Ingredients, prep sessions, batches |
 | Non-trivial feature | Yield math + Cronometer export |
 
-**Cut if behind:** Slices 6–7 (templates). **Never cut:** portion calculate, export, deploy, README.
+**Cut if behind:** Slice 9 extras (templates, USDA). **Never cut:** portion calculate, export, AWS deploy (6), UI that a demo can use (7), README (8).
 
 ---
 
-## Calendar (revised Jul 2026)
+## Calendar (revised Aug 2026)
 
-**Product MVP local:** slices 2 + 4 + 5 by **Jul 29**. **Resume MVP deployed:** slices 8 + 9 by **Jul 31** (worst case).
+**Product MVP local:** slices 2 + 4 + 5 *(done)*. **Resume MVP:** slices **6 → 7 → 8** (AWS, UI, GitHub/README), then apply. **Slice 9** while applications are open.
 
 | Target date | Focus | Exit criteria |
 |-------------|-------|---------------|
 | **Jun 29** | Slice 0 or 1a | Math tests OR first API *(done)* |
 | **Jul 6–22** | 1a + 1b | JWT auth; scoped CRUD *(done)* |
-| **Jul 24** | Slice 2 | 268g raw for 200g cooked; export API works |
-| **Jul 28–29** | Slices 4 + 5 | Full Sunday flow in browser |
-| **Jul 31** | Slices 8 + 9 | **Live demo URL + README on resume** |
-| **Aug onward** | Apply + polish | 6, 7, tests, post-MVP features while applications open |
+| **Jul 24** | Slice 2 | 268g raw for 200g cooked; export API works *(done)* |
+| **Jul 28–29** | Slices 4 + 5 | Full Sunday flow in browser *(done)* |
+| **Aug 2026** | Slices **6 → 7 → 8** | **AWS live URL + multi-page UI + README on resume** |
+| **Sept–Nov** | Slice **9** + apply | Templates, tests, extra polish in free time |
 
-Weekday evenings (~2–3 hrs): finish current slice if the week was short — don't skip ahead of product MVP (2 → 4 → 5) before deploy.
+Order for the resume ship: **deploy first (6)**, then **UI that recruiters will click (7)**, then **README/screenshots (8)** so docs match the polished app.
 
 ---
 
@@ -514,9 +535,11 @@ Weekday evenings (~2–3 hrs): finish current slice if the week was short — do
 | **Jun 29** | 0 or 1a | Chicken math tests OR first API works *(done)* |
 | **Jul 6–22** | 1a + 1b | Login protects routes; user-scoped CRUD *(done)* |
 | **Jul 24** | 2 (+ 3 optional) | 268g raw for 200g cooked; export text works |
-| **Jul 28–29** | 4 + 5 | **Product MVP:** full local UI flow |
-| **Jul 31** | 8 + 9 | **Resume MVP:** live URL + README |
-| *while applying* | 6 + 7 | Meal + ingredient templates |
+| **Jul 28–29** | 4 + 5 | **Product MVP:** full local UI flow *(done)* |
+| **Aug 2026** | **6** | AWS live demo |
+| **Aug 2026** | **7** | Multi-page UI, clearer UX |
+| **Aug 2026** | **8** | GitHub pin + README (demo URL, screenshots) |
+| *while applying* | **9** | Future polish (templates, tests, extras) |
 
 ---
 
@@ -536,16 +559,16 @@ Weekday evenings (~2–3 hrs): finish current slice if the week was short — do
 
 - [ ] Used PrepPort for at least 1 real Sunday prep (2 ideal) — after slices 4 + 5
 - [ ] Chicken raw→cooked→portion→export without Google Notes — **product MVP** (2 + 4 + 5)
-- [ ] **Deployed + README + live demo by Jul 31, 2026** (worst case) — **resume MVP** (8 + 9)
+- [ ] **AWS live demo + multi-page UI + README** — **resume MVP** (6 + 7 + 8)
 - [ ] GitHub pinned; 2–3 JUnit API tests in repo
 
 ---
 
 ## Next action
 
-**Slice 8 + 9 — Deploy + README/resume** (product MVP local is done: slices 2 + 4 + 5).
+**Slice 6 — AWS deploy (Lightsail)** (product MVP local is done: slices 2 + 4 + 5). Phase 0 (credits + Lightsail choice) done. Next: Phase 1 prod config in repo. Then 7 (UI) → 8 (GitHub + README). Slice 9 is later.
 
+- Slice 6: [docs/slices/slice-6.md](./docs/slices/slice-6.md) · [slice-6-agent-handoff.md](./docs/slices/slice-6-agent-handoff.md)
 - Slice 5: [docs/slices/slice-5.md](./docs/slices/slice-5.md) ✓ — portion builder + export UI.
 - Slice 4: [docs/slices/slice-4.md](./docs/slices/slice-4.md) ✓ — auth, ingredients, prep + batches.
 - Slice 2 (API): [docs/slices/slice-2.md](./docs/slices/slice-2.md) ✓
-- Agent handoff: [docs/slices/slice-5-agent-handoff.md](./docs/slices/slice-5-agent-handoff.md)

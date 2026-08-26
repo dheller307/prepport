@@ -1,6 +1,6 @@
 # Agent handoff — Slice 5 (portion builder + export UI)
 
-**Status:** Complete (Aug 2026). **Next:** [PLAN.md](../../PLAN.md) — slice 8 (deploy) + slice 9 (README/resume)
+**Status:** Complete (Aug 2026). **Next:** [PLAN.md](../../PLAN.md) — slice **6** (AWS deploy) → 7 (UI) → 8 (GitHub + README)
 
 ---
 
@@ -51,7 +51,7 @@ POST /api/portion/export      → text/plain body
 
 ---
 
-## Conventions (carry to slice 8)
+## Conventions (carry to slices 6–8)
 
 - API base: `VITE_API_URL` · Bearer on protected routes
 - Pairing mode: human builds; agent explains/reviews; minimal scaffold only when asked
@@ -65,7 +65,7 @@ POST /api/portion/export      → text/plain body
 - `key={index}` on portion lines — fine until reordering lines
 - Global `isCalculating` disables all Calculate buttons while one request runs
 - No React Router — stacked pages in `App.tsx`
-- Meal templates, CSV, per-line debounced calculate — slices 6–7 (cut if behind)
+- Meal templates, CSV, per-line debounced calculate — slice 9
 
 ---
 

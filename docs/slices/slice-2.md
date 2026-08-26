@@ -60,7 +60,7 @@ POST   /api/portion/export
 ## Not in scope
 
 - React portion builder UI (Slice 4–5)
-- Meal templates (Slice 6)
+- Meal templates (Slice 9)
 - Post-cook add-ins / composite batches (post-MVP)
 - CSV export (Phase 2)
 
