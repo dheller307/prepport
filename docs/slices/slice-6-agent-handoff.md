@@ -1,6 +1,6 @@
 # Agent handoff — Slice 6 (AWS deploy — Lightsail)
 
-**Status:** In progress — **Lightsail chosen**, credits checked. Read this **and** [slice-6.md](./slice-6.md) before changing anything. Plan: [PLAN.md](../../PLAN.md).
+**Status:** Complete. Live URL: **https://prepport.duckdns.org**. Read [slice-7.md](./slice-7.md) for next slice.
 
 ---
 

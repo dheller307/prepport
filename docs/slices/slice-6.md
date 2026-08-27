@@ -1,6 +1,6 @@
 # Slice 6 — AWS deploy (Lightsail)
 
-**Status:** In progress — **Lightsail chosen** · **Next after this:** [slice 7](./slice-7.md) (UI / React Router) — file may not exist yet; see [PLAN.md](../../PLAN.md)
+**Status:** Complete · **Next:** [slice 7](./slice-7.md) (UI / React Router) · see [PLAN.md](../../PLAN.md)
 
 **Target:** Aug 2026 · Live demo URL for the **product MVP** (slices 2 + 4 + 5). UI polish is slice 7; README/GitHub pin is slice 8.
 
@@ -8,13 +8,13 @@ Agent handoff: [slice-6-agent-handoff.md](./slice-6-agent-handoff.md)
 
 ## Done when
 
-- [ ] Backend reachable on HTTPS; `GET /health` returns `OK` without auth
-- [ ] PostgreSQL persists data (register → login → ingredient still there after restart)
-- [ ] Frontend static build talks to the deployed API via `VITE_API_URL`
-- [ ] CORS allows the **deployed frontend origin** (not only `http://localhost:5173`)
-- [ ] `JWT_SECRET` is a strong secret from env — **not** the `application.properties` default, **not** in git
-- [ ] Hibernate is **not** `create-drop` in production (that wipes the DB on every restart)
-- [ ] Full Sunday smoke on the live URL: register → ingredient → prep session → batch → portion calculate → export copy
+- [x] Backend reachable on HTTPS; `GET /health` returns `OK` without auth
+- [x] PostgreSQL persists data (register → login → ingredient still there after restart)
+- [x] Frontend static build talks to the deployed API via `VITE_API_URL`
+- [x] CORS allows the **deployed frontend origin** (not only `http://localhost:5173`)
+- [x] `JWT_SECRET` is a strong secret from env — **not** the `application.properties` default, **not** in git
+- [x] Hibernate is **not** `create-drop` in production (that wipes the DB on every restart)
+- [ ] Full Sunday smoke on the live URL: register → ingredient → prep session → batch → portion calculate → export copy (chicken ≈268 g) — confirm in Phase 6 if not already done
 
 ## Context (read first)
 

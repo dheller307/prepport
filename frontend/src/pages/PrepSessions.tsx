@@ -65,6 +65,9 @@ export function PrepSessions() {
     return (
         <div>
             <h1>Prep Sessions</h1>
+            <p className="page-lede">
+                Cook sessions and batches. Record raw and cooked weights so yields are calculated for you.
+            </p>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="sessionDate">Session Date</label>

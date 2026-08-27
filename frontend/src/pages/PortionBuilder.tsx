@@ -117,6 +117,9 @@ export function PortionBuilder() {
     return (
         <div>
             <h1>Portion Builder</h1>
+            <p className="page-lede">
+              Build portions from any prep session's batches. Get macros and raw-equivalent grams for your tracker.
+            </p>
             {prepSessionLoadingError && <p>{prepSessionLoadingError}</p>}
             {prepSessionIsLoading && <p>Loading prep sessions...</p>}
             {!prepSessionIsLoading && !prepSessionLoadingError && prepSessions.length === 0 && (

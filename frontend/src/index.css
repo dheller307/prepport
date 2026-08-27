@@ -16,6 +16,79 @@ body {
   padding: 1rem;
 }
 
+.app-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.app-nav {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+}
+
+.app-nav a {
+  white-space: nowrap;
+}
+
+.app-nav a.active {
+  font-weight: 700;
+}
+
+.page-lede {
+  margin: 0 0 1rem;
+  color: #444;
+}
+
+.hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.auth-card {
+  max-width: 24rem;
+  margin: 2rem auto 0;
+  padding: 1.5rem;
+  border: 1px solid #ccc;
+}
+
+.auth-header {
+  margin-bottom: 1.25rem;
+}
+
+.auth-header h1 {
+  margin-top: 1rem;
+}
+
+@media (min-width: 40rem) {
+  .app-header {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+  }
+
+  .app-nav {
+    flex: 1;
+    overflow-x: visible;
+  }
+}
+
 .portion-line {
   display: flex;
   flex-direction: column;

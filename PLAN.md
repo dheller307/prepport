@@ -140,7 +140,7 @@ Slice 4+  React UI                   ← after backend is trustworthy
 | 2 | Export string format spec | `PortionService`, controller, tests |
 | 4 | Vite + React folder, `fetch` wrapper with auth header | Forms and pages one at a time |
 | 6 | Prod config, Dockerfile, compose, Nginx sketch, Lightsail walkthrough | Prod properties, Docker files, console clicks, SSH, secrets, smoke on live URL |
-| 7 | Router layout + nav pattern | Multi-page UX; you type routes and page polish |
+| 7 | Router layout + nav pattern, page copy seeds | Routes, layout, descriptions, number-input fix, deploy to live URL |
 | 8 | README outline (screenshots, setup, demo URL) | Write README; push/pin GitHub |
 
 ### Optional prep (only if you want homework before week of Jun 29)
@@ -367,24 +367,22 @@ See [docs/slices/slice-5.md](./docs/slices/slice-5.md).
 
 Mobile-friendly (Sunday at the scale).
 
-### Slice 6 — AWS deploy (Lightsail) · **Aug 2026** ← current
+### Slice 6 — AWS deploy (Lightsail) · **Aug 2026** ✓ Complete
 
 See [docs/slices/slice-6.md](./docs/slices/slice-6.md) · agent: [docs/slices/slice-6-agent-handoff.md](./docs/slices/slice-6-agent-handoff.md)
 
-**Chosen:** **Amazon Lightsail** — one Linux instance (~1 GB RAM), Docker Compose (Postgres + API), Nginx for static frontend + HTTPS. ~$120 AWS credits (Lightsail eligible). User is **new to AWS**; agent walks console/SSH step-by-step.
+- Live demo: **https://prepport.duckdns.org** (Lightsail, Docker Compose, Nginx, Certbot)
+- Phases 1–5 complete; HTTPS + browser login working
 
-**Phases:** (0) billing ✓ → (1) `application-prod.properties` + CORS env → (2) Dockerfile + prod compose → (3) Lightsail instance + static IP + firewall → (4) deploy API on server → (5) frontend build + Nginx + HTTPS → (6) persistence proof + Sunday smoke.
+### Slice 7 — UI / UX · **after slice 6** ← current
 
-- Live demo URL (HTTPS); `GET /health` without auth
-- Env on server only: `JWT_SECRET`, DB credentials, `PREPPORT_CORS_ORIGINS` — never in git
-- Frontend built with `VITE_API_URL` pointing at public API
-- Local `docker-compose.yml` stays Postgres-only for dev
+See [docs/slices/slice-7.md](./docs/slices/slice-7.md) · agent: [docs/slices/slice-7-agent-handoff.md](./docs/slices/slice-7-agent-handoff.md)
 
-### Slice 7 — UI / UX · **after slice 6**
-
-- Multi-page app (React Router): auth, ingredients, prep sessions, portion builder as separate routes — not one stacked page
-- Clearer Sunday flow and copy so the app makes sense to a recruiter (and to you at the scale)
-- Mobile-friendly layout; error states and nav that match the real workflow
+- React Router: separate routes for auth, ingredients, prep, portion builder
+- Page descriptions (Sunday workflow copy); auth screen header
+- Fix number-input leading zeros; portion builder refetch on navigation
+- Light layout/CSS after structure — branding deferred
+- Rebuild + deploy frontend to Lightsail after UI changes
 
 ### Slice 8 — GitHub + README · **after slice 7** (screenshots of the polished UI)
 
@@ -566,9 +564,10 @@ Order for the resume ship: **deploy first (6)**, then **UI that recruiters will 
 
 ## Next action
 
-**Slice 6 — AWS deploy (Lightsail)** (product MVP local is done: slices 2 + 4 + 5). Phase 0 (credits + Lightsail choice) done. Next: Phase 1 prod config in repo. Then 7 (UI) → 8 (GitHub + README). Slice 9 is later.
+**Slice 7 — UI / UX** (slice 6 live: **https://prepport.duckdns.org**). Then 8 (GitHub + README). Slice 9 is later.
 
-- Slice 6: [docs/slices/slice-6.md](./docs/slices/slice-6.md) · [slice-6-agent-handoff.md](./docs/slices/slice-6-agent-handoff.md)
+- Slice 7: [docs/slices/slice-7.md](./docs/slices/slice-7.md) · [slice-7-agent-handoff.md](./docs/slices/slice-7-agent-handoff.md)
+- Slice 6: [docs/slices/slice-6.md](./docs/slices/slice-6.md) ✓
 - Slice 5: [docs/slices/slice-5.md](./docs/slices/slice-5.md) ✓ — portion builder + export UI.
 - Slice 4: [docs/slices/slice-4.md](./docs/slices/slice-4.md) ✓ — auth, ingredients, prep + batches.
 - Slice 2 (API): [docs/slices/slice-2.md](./docs/slices/slice-2.md) ✓

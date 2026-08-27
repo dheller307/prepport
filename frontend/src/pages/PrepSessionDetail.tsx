@@ -101,6 +101,9 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
                     <input type="number" id="rawWeightG" value={form.rawWeightG} onChange={(e) => setForm({ ...form, rawWeightG: Number(e.target.value) })} />
                     <label htmlFor="cookedWeightG">Cooked Weight (g)</label>
                     <input type="number" id="cookedWeightG" value={form.cookedWeightG} onChange={(e) => setForm({ ...form, cookedWeightG: Number(e.target.value) })} />
+                    <p className="hint">
+                        Both weights are required. If nothing changed in the pan, enter the same number twice.
+                    </p>
                 </div>
                 <button type="submit" disabled={isSubmitting || isLoadingSession|| isLoadingIngredients|| !!loadingErrorIngredients|| !!loadingErrorSession|| !prepSession ||!form.ingredientId || !form.rawWeightG || !form.cookedWeightG}>{isSubmitting ? 'Adding...' : 'Add Batch'}</button>
             </form>

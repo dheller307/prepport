@@ -68,17 +68,23 @@ export function Ingredients() {
     return (
         <div>
             <h1>Ingredients</h1>
+            <p className="page-lede">
+                Foods you prep with. Enter macros per 100 g from your tracker.
+            </p>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="name">Name</label>
                     <input type="text" id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
                 </div>
                 <div>
-                    <label htmlFor="macroBasis">Macro Basis</label>
+                    <label htmlFor="macroBasis">Macros copied from</label>
                     <select id="macroBasis" value={form.macroBasis} onChange={(e) => setForm({ ...form, macroBasis: e.target.value as 'RAW' | 'COOKED' })}>
-                        <option value="RAW">RAW</option>
-                        <option value="COOKED">COOKED</option>
+                        <option value="RAW">Raw food entry</option>
+                        <option value="COOKED">Cooked food entry</option>
                     </select>
+                    <p className="hint">
+                        Use raw unless you copied numbers from a cooked food or a package label. Batches still need raw and cooked weights for yield.
+                    </p>
                 </div>
                 <div>
                     <label htmlFor="proteinPer100g">Protein per 100g</label>

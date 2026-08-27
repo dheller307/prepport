@@ -1,14 +1,12 @@
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { getToken } from "./token";
 
+export function ProtectedRoute() {
+  const location = useLocation();
 
-type ProtectedRouteProps = {
-    children: React.ReactNode;
-    fallback: React.ReactNode;
-}
+  if (!getToken()) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
 
-export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
-    if (!getToken()) {
-        return fallback;
-    }
-    return <>{children}</>;
+  return <Outlet />;
 }
