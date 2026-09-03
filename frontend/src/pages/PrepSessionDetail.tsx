@@ -86,7 +86,8 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
 
     return (
         <div>
-            <h1>Prep Session Details</h1>
+            <h1>{"Prep Session: " + prepSession?.name}</h1>
+            <p className="page-lede">{prepSession?.sessionDate}</p>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="ingredientId">Ingredient</label>
@@ -98,9 +99,9 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
                         ))}
                     </select>
                     <label htmlFor="rawWeightG">Raw Weight (g)</label>
-                    <input type="number" id="rawWeightG" value={form.rawWeightG} onChange={(e) => setForm({ ...form, rawWeightG: Number(e.target.value) })} />
+                    <input type="number" id="rawWeightG" value={form.rawWeightG === 0 ? '' : form.rawWeightG} onChange={(e) => setForm({ ...form, rawWeightG: Number(e.target.value) })} />
                     <label htmlFor="cookedWeightG">Cooked Weight (g)</label>
-                    <input type="number" id="cookedWeightG" value={form.cookedWeightG} onChange={(e) => setForm({ ...form, cookedWeightG: Number(e.target.value) })} />
+                    <input type="number" id="cookedWeightG" value={form.cookedWeightG === 0 ? '' : form.cookedWeightG} onChange={(e) => setForm({ ...form, cookedWeightG: Number(e.target.value) })} />
                     <p className="hint">
                         Both weights are required. If nothing changed in the pan, enter the same number twice.
                     </p>

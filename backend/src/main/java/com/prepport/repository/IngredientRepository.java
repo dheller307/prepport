@@ -14,6 +14,4 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
     Optional<Ingredient> findByIdAndUser(Long id, User user);
 
     boolean existsByIdAndUser(Long id, User user);
-
-    void deleteByIdAndUser(Long id, User user);
 }

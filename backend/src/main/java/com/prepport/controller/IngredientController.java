@@ -61,9 +61,8 @@ public class IngredientController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteIngredient(@PathVariable Long id, @AuthenticationPrincipal User user) {
-        if (!repository.existsByIdAndUser(id, user)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found");
-        }
-        repository.deleteByIdAndUser(id, user);
+        Ingredient ingredientToDelete = repository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found"));
+        repository.delete(ingredientToDelete);
     }
 }

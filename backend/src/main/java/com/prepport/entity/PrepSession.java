@@ -33,6 +33,9 @@ public class PrepSession {
     @OneToMany(mappedBy = "prepSession", fetch = FetchType.EAGER)
     private List<Batch> batches;
     
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Column(name = "session_date", nullable = false)
     private LocalDate sessionDate;
 
@@ -45,7 +48,8 @@ public class PrepSession {
     protected PrepSession() {
     }
 
-    public PrepSession(LocalDate sessionDate) {
+    public PrepSession(String name, LocalDate sessionDate) {
+        this.name = name;
         this.sessionDate = sessionDate;
     }
 
@@ -58,6 +62,10 @@ public class PrepSession {
 
     public Long getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public LocalDate getSessionDate() {
@@ -80,6 +88,10 @@ public class PrepSession {
     @JsonIgnore
     public User getUser() {
         return user;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setSessionDate(LocalDate sessionDate) {

@@ -9,3 +9,5 @@ export interface Ingredient {
     notes?: string
     createdAt?: string
 }
+
+export type IngredientForm = Omit<Ingredient, 'id' | 'createdAt'>

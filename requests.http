@@ -57,13 +57,16 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
+  "name": "Sunday chicken prep",
   "sessionDate": "2026-07-20",
   "notes": "Sunday chicken prep"
 }
 
+@prepSessionId = {{createPrepSession.response.body.id}}
+
 ### Add chicken batch to session (use session id from above)
 # @name createBatch
-POST {{baseUrl}}/api/prep-sessions/1/batches
+POST {{baseUrl}}/api/prep-sessions/{{prepSessionId}}/batches
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -76,7 +79,7 @@ Authorization: Bearer {{token}}
 @batchId = {{createBatch.response.body.id}}
 
 ### Read session back with batches
-GET {{baseUrl}}/api/prep-sessions/1
+GET {{baseUrl}}/api/prep-sessions/{{prepSessionId}}
 Authorization: Bearer {{token}}
 
 ### Portion calculate — 200g cooked chicken (expect cronometerG ≈ 268.25, protein ≈ 60.4)
@@ -105,3 +108,26 @@ Authorization: Bearer {{token}}
 
 ### Protected route without token (expect 401 or 403)
 GET {{baseUrl}}/api/ingredients
+
+### Update batch
+PUT {{baseUrl}}/api/prep-sessions/{{prepSessionId}}/batches/{{batchId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "ingredientId": 1,
+  "rawWeightG": 2200,
+  "cookedWeightG": 1600
+}
+
+### Read session to verify batch update
+GET {{baseUrl}}/api/prep-sessions/{{prepSessionId}}
+Authorization: Bearer {{token}}
+
+### Delete batch
+DELETE {{baseUrl}}/api/prep-sessions/{{prepSessionId}}/batches/{{batchId}}
+Authorization: Bearer {{token}}
+
+### Read session to verify batch deletion
+GET {{baseUrl}}/api/prep-sessions/{{prepSessionId}}
+Authorization: Bearer {{token}}

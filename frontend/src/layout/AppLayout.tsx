@@ -17,6 +17,7 @@ export function AppLayout() {
           <NavLink to="/ingredients">Ingredients</NavLink>
           <NavLink to="/prep">Prep</NavLink>
           <NavLink to="/portion">Portion</NavLink>
+          <NavLink to="/tutorial">Tutorial</NavLink>
         </nav>
         <button type="button" onClick={handleLogout}>
           Logout

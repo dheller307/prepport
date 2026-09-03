@@ -24,6 +24,7 @@ import com.prepport.entity.Batch;
 import com.prepport.entity.Ingredient;
 import com.prepport.entity.User;
 import com.prepport.dto.CreateBatchRequest;
+import com.prepport.dto.PrepSessionRequest;
 
 @RestController
 @RequestMapping("/api/prep-sessions")
@@ -41,8 +42,11 @@ public class PrepSessionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PrepSession createPrepSession(@RequestBody PrepSession prepSession, @AuthenticationPrincipal User user) {
+    public PrepSession createPrepSession(@Valid @RequestBody PrepSessionRequest request, @AuthenticationPrincipal User user) {
+        PrepSession prepSession = new PrepSession(request.name(), request.sessionDate());
+        prepSession.setNotes(request.notes());
         prepSession.setUser(user);
+        
         return repository.save(prepSession);
     }
 
@@ -56,6 +60,22 @@ public class PrepSessionController {
         return batchRepository.save(batch);
     }
 
+    @PutMapping("/{sessionId}/batches/{batchId}")
+    public Batch updateBatch(@PathVariable Long sessionId, @PathVariable Long batchId, @Valid @RequestBody CreateBatchRequest request, @AuthenticationPrincipal User user) {
+        Batch batch = batchRepository.findByIdAndPrepSession_IdAndPrepSession_User(batchId, sessionId, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Batch not found"));
+        batch.setIngredient(ingredientRepository.findByIdAndUser(request.ingredientId(), user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingredient not found")));
+        batch.setRawWeightG(request.rawWeightG());
+        batch.setCookedWeightG(request.cookedWeightG());
+        return batchRepository.save(batch);
+    }
+
+    @DeleteMapping("/{sessionId}/batches/{batchId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBatch(@PathVariable Long sessionId, @PathVariable Long batchId, @AuthenticationPrincipal User user) {
+        Batch batch = batchRepository.findByIdAndPrepSession_IdAndPrepSession_User(batchId, sessionId, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Batch not found"));
+        batchRepository.delete(batch);
+    }
+
     @GetMapping
     public List<PrepSession> listPrepSessions(@AuthenticationPrincipal User user) {
         return repository.findByUser(user);
@@ -67,20 +87,19 @@ public class PrepSessionController {
     }
 
     @PutMapping("/{id}")
-    public PrepSession updatePrepSession(@PathVariable Long id, @RequestBody PrepSession prepSession, @AuthenticationPrincipal User user) {
+    public PrepSession updatePrepSession(@PathVariable Long id, @Valid @RequestBody PrepSessionRequest request, @AuthenticationPrincipal User user) {
         PrepSession prepSessionToUpdate = repository.findByIdAndUser(id, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Prep session not found"));
-        prepSessionToUpdate.setSessionDate(prepSession.getSessionDate());
-        prepSessionToUpdate.setNotes(prepSession.getNotes());
+        prepSessionToUpdate.setName(request.name());
+        prepSessionToUpdate.setSessionDate(request.sessionDate());
+        prepSessionToUpdate.setNotes(request.notes());
         return repository.save(prepSessionToUpdate);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePrepSession(@PathVariable Long id, @AuthenticationPrincipal User user) {
-        if (!repository.existsByIdAndUser(id, user)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Prep session not found");
-        }
-        repository.deleteByIdAndUser(id, user);
+        PrepSession prepSessionToDelete = repository.findByIdAndUser(id, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Prep session not found"));
+        repository.delete(prepSessionToDelete);
     }
 }
 

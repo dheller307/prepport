@@ -144,7 +144,7 @@ export function PortionBuilder() {
                                             <option key={batch.id} value={batch.id}>{batch.ingredient.name} - {batch.createdAt?.split('T')[0]} - {batch.rawWeightG}g/{batch.cookedWeightG}g</option>
                                         ))}
                                     </select>
-                                    <input type="number" value={line.cookedGrams} onChange={(e) => updateLineGrams(index, Number(e.target.value))} />
+                                    <input type="number" value={line.cookedGrams === 0 ? '' : line.cookedGrams} onChange={(e) => updateLineGrams(index, Number(e.target.value))} />
                                     <div className='portion-line-actions'>
                                         <button onClick={() => calculateLine(index)} disabled={isCalculating}>{isCalculating ? 'Calculating...' : 'Calculate'}</button>
                                         <button onClick={() => handleRemoveLine(index)}>Remove</button>

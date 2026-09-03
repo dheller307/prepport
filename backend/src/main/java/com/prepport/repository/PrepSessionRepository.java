@@ -13,7 +13,4 @@ public interface PrepSessionRepository extends JpaRepository<PrepSession, Long> 
 
     Optional<PrepSession> findByIdAndUser(Long id, User user);
 
-    boolean existsByIdAndUser(Long id, User user);
-
-    void deleteByIdAndUser(Long id, User user);
 }

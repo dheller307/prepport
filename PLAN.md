@@ -173,10 +173,11 @@ Skip full Spring Security tutorials until Slice 1b — they'll overwhelm before 
 ```
 User
  └── Ingredient          (reusable food definition — your "chicken breast raw")
- └── PrepSession         (one Sunday — e.g. "2026-06-15")
+ └── PrepSession         (named Sunday prep — e.g. "Labor Day prep")
       └── Batch          (one cooked component in that session)
+           └── PortionLogLine (a saved amount taken from that batch)
  └── MealTemplate        (saved portion combo — e.g. "standard lunch")
- └── PortionLog          (optional — what you ate on a given day)
+ └── PortionLog          (saved named/date-stamped meal with one or more lines)
 ```
 
 ### Ingredient
@@ -217,6 +218,14 @@ One row in a meal: amount taken from a **specific batch**.
 | cooked_amount_g | 200 |
 | → raw_equivalent_g | 268 (for Cronometer) |
 | → macros | computed |
+
+### Portion log (saved meal)
+
+When the user saves a built portion, PrepPort records a named meal and its batch
+lines (for example, “Tuesday lunch”). A batch's available cooked grams are
+**derived**: `cooked_weight_g − sum(saved portion-line cooked amounts)`. Do not
+store a mutable “remaining” value; editing or deleting a saved meal must restore
+availability correctly.
 
 ---
 
@@ -378,11 +387,28 @@ See [docs/slices/slice-6.md](./docs/slices/slice-6.md) · agent: [docs/slices/sl
 
 See [docs/slices/slice-7.md](./docs/slices/slice-7.md) · agent: [docs/slices/slice-7-agent-handoff.md](./docs/slices/slice-7-agent-handoff.md)
 
-- React Router: separate routes for auth, ingredients, prep, portion builder
-- Page descriptions (Sunday workflow copy); auth screen header
-- Fix number-input leading zeros; portion builder refetch on navigation
-- Light layout/CSS after structure — branding deferred
-- Rebuild + deploy frontend to Lightsail after UI changes
+**Goal:** a recruiter can understand, navigate, and complete the Sunday workflow
+without encountering stacked forms or ambiguous data.
+
+1. **Already started — app structure:** React Router; separate auth, ingredients,
+   prep, and portion pages; shared navigation; auth header and page descriptions.
+2. **Ingredient library:** list first with details, edit, delete, and an explicit
+   “Add ingredient” action that opens the existing form.
+3. **Named prep sessions:** list first with name/date/batch count; create, edit,
+   and delete through deliberate actions. Opening a session reveals its batches.
+4. **Batches inside sessions:** vertically laid-out add/edit form; edit/delete
+   batch actions; a compact expandable history of portions saved from that batch.
+5. **Saved portions and availability:** named/date-stamped multi-batch portion
+   logs; show available cooked grams; validate against availability; edit/delete
+   logs restores grams. Keep batches nested in their session—no standalone batches
+   screen unless dogfooding proves it necessary.
+6. **Public explanation:** `/how-it-works` introduces ingredient → prep → portion
+   → copy workflow for one-time demo visitors.
+7. **Finish:** leading-zero fix, mobile spacing and form cleanup, tracker-neutral
+   export wording, live deploy, and end-to-end smoke test.
+
+This expanded vertical slice includes the small backend work needed for batches
+and saved portion logs. Visual branding remains deferred.
 
 ### Slice 8 — GitHub + README · **after slice 7** (screenshots of the polished UI)
 
@@ -418,11 +444,15 @@ Not required to put PrepPort on the resume. Pick from:
 
 ---
 
-## Cronometer integration (export only)
+## Nutrition-tracker integration (export only)
 
-Cronometer has **no public write API**. PrepPort integrates via:
+PrepPort is a companion rather than a diary. Common trackers do not offer a
+reliable public write API for this use: Cronometer has no public individual-user
+write API, and MyFitnessPal's API is private to approved partners.
 
-1. **Copy-paste export** (MVP) — formatted text with raw grams
+PrepPort integrates via:
+
+1. **Copy-paste export** (MVP) — tracker-ready logging text with raw grams
 2. **CSV export** (Phase 2) — columns: food_name, grams, basis, meal_slot
 3. **Recipe card** (Phase 2) — instructions to create a Custom Recipe in Cronometer with exact weights
 
@@ -444,10 +474,18 @@ DELETE /api/ingredients/{id}
 GET    /api/prep-sessions
 POST   /api/prep-sessions
 GET    /api/prep-sessions/{id}
+PUT    /api/prep-sessions/{id}
+DELETE /api/prep-sessions/{id}
 POST   /api/prep-sessions/{id}/batches
+PUT    /api/prep-sessions/{id}/batches/{batchId}
+DELETE /api/prep-sessions/{id}/batches/{batchId}
 
 POST   /api/portion/calculate
-GET    /api/portion/export
+POST   /api/portion/export
+GET    /api/portion-logs
+POST   /api/portion-logs
+PUT    /api/portion-logs/{id}
+DELETE /api/portion-logs/{id}
 
 GET    /api/meal-templates          (Phase 2)
 POST   /api/meal-templates
@@ -468,7 +506,7 @@ ingredients (
 )
 
 prep_sessions (
-  id, user_id, session_date, notes, created_at
+  id, user_id, name, session_date, notes, created_at
 )
 
 batches (
@@ -476,6 +514,15 @@ batches (
   raw_weight_g,          -- required (dry/raw weigh-in)
   cooked_weight_g,       -- required (post-cook yield for portions)
   created_at
+)
+
+portion_logs (
+  id, user_id, name, portion_date, created_at
+)
+
+portion_log_lines (
+  id, portion_log_id, batch_id,
+  cooked_amount_g
 )
 
 meal_templates (        -- Phase 2

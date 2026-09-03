@@ -1,83 +1,95 @@
-# Agent handoff — Slice 7 (UI / UX)
+# Agent handoff — Slice 7 (recruiter-ready UI/UX)
 
-**Status:** Not started. Read this **and** [slice-7.md](./slice-7.md) before changing anything. Plan: [PLAN.md](../../PLAN.md).
+**Status:** In progress. Read [slice-7.md](./slice-7.md) and [PLAN.md](../../PLAN.md)
+before changing code.
 
----
+## Opener
 
-## Opener (human can paste)
+> PrepPort Slice 7 is in progress. Read `docs/slices/slice-7.md` and this handoff.
+> We build together in the listed mini-sections, not as a one-shot refactor. Begin
+> with the current mini-section only, explain the concepts briefly, then let me
+> implement and review it. Shell commands use `rtk`. Do not commit unless I ask.
 
-> PrepPort **slice 7 — UI / UX**. Read `docs/slices/slice-7.md` and this handoff. Slice 6 is live at **https://prepport.duckdns.org**. Focus: React Router, page copy, number-input fix, portion-builder refresh. Structure before visual branding. Pairing: I type; you explain and review. Do not start slice 8 README except tiny deploy-required edits. Shell: `rtk`. Do not commit unless I ask.
+## Product and live context
 
----
+- PrepPort is a meal-prep companion: ingredients → named prep session → batches →
+  saved portions → copy logging text for a nutrition tracker.
+- Live demo: **https://prepport.duckdns.org**.
+- Stack: React 18 + TypeScript + Vite; Spring Boot + JPA + PostgreSQL; frontend
+  served by Nginx on Lightsail.
+- Slice 6 deployment is complete. Slice 8 README/screenshots begin only after
+  Slice 7 is complete and deployed.
 
-## What the next agent must know
+## Existing work
 
-**Product:** Cronometer *companion*. Sunday: ingredients → prep sessions + batches (raw/cooked) → portion builder → copy-paste export (raw g).
+- Router, protected routes, app/auth layouts, login/register pages, and page
+  descriptions are already committed.
+- Ingredient and prep-session backend `PUT`/`DELETE` APIs already exist but are
+  not wired into the frontend.
+- Batches currently have create only; batch update/delete APIs must be added.
+- Portion calculate/export is currently stateless. Saved portion logs and derived
+  availability do not exist yet.
 
-**Stack:** React 18, TypeScript, Vite, Spring API on same host via Nginx. No new backend slice.
+## Build contract
 
-**Live demo:** https://prepport.duckdns.org · DuckDNS · Lightsail · `PREPPORT_CORS_ORIGINS=https://prepport.duckdns.org`
+### Hierarchy
 
-**Slice 6 complete:** Docker on server, HTTPS Certbot, frontend `scp` to `/var/www/prepport`.
+```text
+Prep session (required name + date)
+  └── Batch (raw/cooked weights)
+       └── Saved portion history
+```
 
----
+Keep batches inside their prep session. Use collapsible history/details to prevent
+crowding. Do not create a top-level batches page unless later dogfooding proves it
+necessary.
 
-## User feedback driving slice 7 (Aug 2026 dogfood)
+### Portion accounting
 
-| Issue | Planned fix |
-|-------|-------------|
-| Bare login/register | Auth header + PrepPort title; `/login` `/register` routes |
-| Everything on one page | React Router + nav |
-| Unclear workflow | Per-page description copy minimum; deeper flow redesign only if still awkward after router |
-| Portion builder stale after new prep | Own route + refetch on mount / on navigate to `/portion` |
-| Number inputs show `0100` | String state or empty-string display for zero |
-| Ugly overall | Light CSS cleanup **after** router; no branding sprint yet |
+Save a named/date-stamped portion log with one or more batch lines. Available
+cooked grams are derived server-side:
 
----
+```text
+batch cooked grams − sum(saved portion-log-line cooked grams)
+```
 
-## Repo state
+Do **not** store a mutable remaining-grams column. Validate availability on
+create/update and make edit/delete restore availability naturally.
 
-| Piece | Reality |
-|-------|---------|
-| `App.tsx` | Stacked: Ingredients + PrepSessions + PortionBuilder |
-| React Router | **Not installed** |
-| `PortionBuilder.tsx` | `useEffect(..., [])` loads prep sessions once |
-| Number inputs | `Ingredients`, `PrepSessionDetail`, `PortionBuilder` — `type="number"` + numeric `value` |
-| Nginx | SPA `try_files` already on server |
-| `frontend/src/App.tsx` | `const [, setIsLoggedIn]` — deploy fix from slice 6 |
+### Tracker boundary
 
----
+Keep copy-paste export and use tracker-neutral UI language. Cronometer does not
+offer a supported public individual-user write API, and MyFitnessPal write access
+is partner-only. Do not add OAuth, third-party credentials, reverse-engineered
+tracker APIs, or CSV export in this slice.
 
-## Phased work
+## Mini-section order
 
-| Phase | Focus | Status |
-|-------|--------|--------|
-| 1 | `react-router-dom`, routes, `AppLayout`, protected routes | Not started |
-| 2 | Auth headers, page descriptions | Not started |
-| 3 | Number input UX | Not started |
-| 4 | Portion builder refetch on `/portion` | Not started |
-| 5 | Light CSS spacing (no brand system) | Not started |
-| Deploy | Rebuild + scp to Lightsail | After each meaningful UI batch |
+1. **7.1 Foundation** — number-input fix, navigation freshness, `/how-it-works`.
+2. **7.2 Ingredients** — list/details/add/edit/delete using existing APIs.
+3. **7.3 Prep sessions** — required name; list-first session CRUD and clear detail.
+4. **7.4 Batches** — scoped update/delete API plus vertical add/edit UI.
+5. **7.5 Saved portions** — portion-log entities/API, availability validation,
+   nested batch history.
+6. **7.6 Builder** — labels, availability, name/date, save, neutral export copy.
+7. **7.7 Finish** — responsive polish, tests, live deployment and smoke test.
 
-Full checklist: [slice-7.md](./slice-7.md#done-when).
+For each mini-section: agree on the smallest design, implement one vertical path,
+run relevant tests/build, inspect the result, then move on.
 
----
+## Deploy reminder
 
-## Conventions
+```bash
+cd frontend
+VITE_API_URL=https://prepport.duckdns.org npm run build
+scp -i ~/.ssh/lightsail-us-east-1.pem -r dist ubuntu@3.225.15.117:~/prepport-dist-new
+```
 
-- Frontend-only unless bug requires API tweak
-- Human implements; agent reviews
-- Deploy: `VITE_API_URL=https://prepport.duckdns.org npm run build` → scp → `sudo cp` to `/var/www/prepport`
-- Use fresh scp folder name (`prepport-dist-new`) — avoid nested `dist/` folder mistake from slice 6
+On the server, copy the contents into `/var/www/prepport/` and set ownership to
+`www-data`. Use a fresh remote staging directory every deploy.
 
-## Deferred (not slice 7)
+## Deferred
 
-- README + GitHub pin (**slice 8**)
-- Templates, USDA (**slice 9**)
-- Full visual branding / color system
-
----
-
-## Exit for this conversation
-
-Multi-page app on live URL; auth and main screens have clear copy; number inputs and portion refresh fixed; Sunday smoke passes on https://prepport.duckdns.org. Hand off to slice 8 for README + screenshots.
+- README/GitHub pin/resume copy (Slice 8)
+- Ingredient/meal templates, USDA lookup, CSV, direct tracker sync
+- Dashboard, standalone inventory/batches page, dark mode, full brand system
