@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { PrepSession } from "../types/prepSession";
 import { Batch, CreateBatchRequest } from "../types/batch";
 import { Ingredient } from "../types/ingredient";
+import { PortionLogResponse } from "../types/portionLog";
 import { getPrepSession } from "../api/prepSessions";
 import { createBatch, updateBatch, deleteBatch } from "../api/batches";
 import { listIngredients } from "../api/ingredients";
+import { listPortionLogs } from "../api/portionLogs";
 
 type PrepSessionDetailProps = {
     id: number;
@@ -21,10 +23,13 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
     
     const [prepSession, setPrepSession] = useState<PrepSession | null>(null);
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+    const [portionLogs, setPortionLogs] = useState<PortionLogResponse[]>([]);
     const [loadingErrorIngredients, setLoadingErrorIngredients] = useState<string | null>(null);
     const [loadingErrorSession, setLoadingErrorSession] = useState<string | null>(null);
     const [isLoadingSession, setIsLoadingSession] = useState<boolean>(false);
     const [isLoadingIngredients, setIsLoadingIngredients] = useState<boolean>(false);
+    const [loadingErrorPortionLogs, setLoadingErrorPortionLogs] = useState<string | null>(null);
+    const [isLoadingPortionLogs, setIsLoadingPortionLogs] = useState<boolean>(false);
     const [submissionError, setSubmissionError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -86,6 +91,22 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
         loadPrepSession();
     }, [id]);
 
+    useEffect(() => {
+        async function loadPortionLogs() {
+            setLoadingErrorPortionLogs(null);
+            setIsLoadingPortionLogs(true);
+            try {
+                const response = await listPortionLogs();
+                setPortionLogs(response);
+            } catch (error) {
+                setLoadingErrorPortionLogs(error instanceof Error ? error.message : 'Failed to load portion logs');
+            } finally {
+                setIsLoadingPortionLogs(false);
+            }
+        }
+        loadPortionLogs();
+    }, [id]);
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setSubmissionError(null);
@@ -130,11 +151,27 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
         return `${((batch.cookedWeightG / batch.rawWeightG) * 100).toFixed(1)}%`;
     }
 
+    function calculateUsedCookedGrams(batch: Batch) {
+        if (batch.id === undefined) {
+            return 0;
+        }
+        return portionLogs.flatMap((log) => log.lines).filter((line) => line.batchId === batch.id).reduce((total, line) => total + line.cookedGrams, 0);
+    }
+
+    function calculateAvailableCookedGrams(batch: Batch) {
+        if (batch.id === undefined) {
+            return 0;
+        }
+        return batch.cookedWeightG - calculateUsedCookedGrams(batch);
+    }
+
     return (
         <div>
             {submissionError && <p>{submissionError}</p>}
             {loadingErrorSession && <p>{loadingErrorSession}</p>}
+            {loadingErrorPortionLogs && <p>{loadingErrorPortionLogs}</p>}
             {isLoadingSession && <p>Loading prep session...</p>}
+            {isLoadingPortionLogs && <p>Loading portion history...</p>}
             {!isLoadingSession && !loadingErrorSession && prepSession && (
                 <div>
                     <button type="button" onClick={onBack}>Back to prep sessions</button>
@@ -193,6 +230,27 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
                                     <h2>{batch.ingredient.name}</h2>
                                     <p>Raw: {batch.rawWeightG} g · Cooked: {batch.cookedWeightG} g</p>
                                     <p>Yield: {formatYield(batch)}</p>
+                                    <p>Available: {calculateAvailableCookedGrams(batch).toFixed(1)} g</p>
+                                    {batch.id !== undefined && !isLoadingPortionLogs && (
+                                        <details>
+                                            <summary>Portion history</summary>
+                                            {calculateUsedCookedGrams(batch) === 0 ? (
+                                                <p>No portions logged from this batch yet.</p>
+                                            ) : (
+                                                <ul>
+                                                    {portionLogs.flatMap((log) =>
+                                                        log.lines
+                                                            .filter((line) => line.batchId === batch.id)
+                                                            .map((line) => (
+                                                                <li key={log.id}>
+                                                                    {log.portionDate} · {log.name} · {line.cookedGrams} g used
+                                                                </li>
+                                                            ))
+                                                    )}
+                                                </ul>
+                                            )}
+                                        </details>
+                                    )}
                                     {batch.id !== undefined && (
                                         <div className="form-actions">
                                             <button type="button" onClick={() => openEditBatchForm(batch)}>

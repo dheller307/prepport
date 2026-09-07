@@ -3,6 +3,7 @@ package com.prepport.service;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,6 +17,8 @@ import com.prepport.entity.PortionLog;
 import com.prepport.entity.PortionLogLine;
 import com.prepport.dto.PortionLogRequest;
 import com.prepport.dto.PortionLogLineRequest;
+import com.prepport.dto.PortionLogResponse;
+import com.prepport.dto.PortionLogLineResponse;
 import com.prepport.entity.User;
 import com.prepport.entity.Batch;
 
@@ -32,20 +35,71 @@ public class PortionLogService {
     }
 
     @Transactional
-    public PortionLog createPortionLog(PortionLogRequest request, User user) {
+    public PortionLogResponse createPortionLog(PortionLogRequest request, User user) {
+        List<PortionLogLine> lines = buildValidatedLines(request, user, null);
+        PortionLog portionLog = new PortionLog(request.name(), request.portionDate());
+        portionLog.setUser(user);
+        portionLog.replaceLines(lines);
+
+        return toResponse(portionLogRepository.save(portionLog));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PortionLogResponse> listPortionLogs(User user) {
+        return portionLogRepository.findByUserOrderByPortionDateDesc(user).stream()
+            .map(this::toResponse)
+            .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PortionLogResponse getPortionLog(Long id, User user) {
+        return toResponse(portionLogRepository.findByIdAndUser(id, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Portion log not found")));
+    }
+
+    @Transactional
+    public PortionLogResponse updatePortionLog(Long id, PortionLogRequest request, User user) {
+        PortionLog portionLog = portionLogRepository.findByIdAndUser(id, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Portion log not found"));
+        List<PortionLogLine> lines = buildValidatedLines(request, user, portionLog.getId());
+        portionLog.setName(request.name());
+        portionLog.setPortionDate(request.portionDate());
+        portionLog.replaceLines(lines);
+        return toResponse(portionLogRepository.save(portionLog));
+    }
+
+    @Transactional
+    public void deletePortionLog(Long id, User user) {
+        PortionLog portionLog = portionLogRepository.findByIdAndUser(id, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Portion log not found"));
+        portionLogRepository.delete(portionLog);
+    }
+
+    private List<PortionLogLine> buildValidatedLines(PortionLogRequest request, User user, Long excludedPortionLogId) {
         Map<Long, Double> requestedByBatchId = new HashMap<>();
-        
         for (PortionLogLineRequest line : request.lines()) {
             requestedByBatchId.merge(line.batchId(), line.cookedGrams(), Double::sum);
         }
 
+        List<PortionLogLine> lines = new ArrayList<>();
         for (Map.Entry<Long, Double> entry : requestedByBatchId.entrySet()) {
             Long batchId = entry.getKey();
             Double cookedGrams = entry.getValue();
+            Batch batch = batchRepository.findByIdAndPrepSession_User(batchId, user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Batch not found"));
             
+            double alreadyUsed = excludedPortionLogId == null ? portionLogLineRepository.sumCookedGramsByBatchId(batchId) : portionLogLineRepository.sumCookedGramsByBatchIdExcludingPortionLogId(batchId, excludedPortionLogId);
+            if (alreadyUsed + cookedGrams > batch.getCookedWeightG()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, batch.getIngredient().getName() + " has only " + (batch.getCookedWeightG() - alreadyUsed) + " grams left in this batch.");
+            }
+
+            lines.add(new PortionLogLine(batch, cookedGrams));
         }
+        return lines;
     }
 
-    
+    private PortionLogResponse toResponse(PortionLog portionLog) {
+        List<PortionLogLineResponse> lines = portionLog.getLines().stream()
+            .map(line -> new PortionLogLineResponse(line.getBatch().getId(), line.getBatch().getPrepSession().getId(), line.getBatch().getIngredient().getName(), line.getCookedGrams()))
+            .toList();
+        return new PortionLogResponse(portionLog.getId(), portionLog.getName(), portionLog.getPortionDate(), portionLog.getCreatedAt(), lines);
+    }
     
 }

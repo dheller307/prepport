@@ -30,8 +30,7 @@ public class PortionLogLine {
     protected PortionLogLine() {
     }
 
-    public PortionLogLine(PortionLog portionLog, Batch batch, double cookedGrams) {
-        this.portionLog = portionLog;
+    public PortionLogLine(Batch batch, double cookedGrams) {
         this.batch = batch;
         this.cookedGrams = cookedGrams;
     }
