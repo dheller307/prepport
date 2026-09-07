@@ -13,3 +13,9 @@ frontend/dist/
 
 # VSCode
 .vscode/
+
+# Previous docs
+requests.http
+.cursorignore
+PLAN.md
+docs/slices/
