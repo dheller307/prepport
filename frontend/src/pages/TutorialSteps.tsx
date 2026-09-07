@@ -10,12 +10,13 @@ export function TutorialSteps() {
         batch&apos;s raw and cooked weights.
       </li>
       <li>
-        <strong>Build portions.</strong> Choose batches and enter the cooked
-        grams you take.
+        <strong>Build and save a meal.</strong> Choose batches, enter the
+        cooked grams you eat, then save the meal to update each batch&apos;s
+        available amount.
       </li>
       <li>
-        <strong>Copy the result.</strong> PrepPort calculates macros and
-        raw-equivalent grams you can log in your nutrition tracker.
+        <strong>Copy nutrition details.</strong> PrepPort calculates
+        meal macros and tracker-ready amounts. Copying alone does not save a meal or change batch availability, you must save the meal.
       </li>
     </ol>
   );

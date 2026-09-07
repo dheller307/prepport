@@ -99,7 +99,7 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
                 const response = await listPortionLogs();
                 setPortionLogs(response);
             } catch (error) {
-                setLoadingErrorPortionLogs(error instanceof Error ? error.message : 'Failed to load portion logs');
+                setLoadingErrorPortionLogs(error instanceof Error ? error.message : 'Failed to load meal history');
             } finally {
                 setIsLoadingPortionLogs(false);
             }
@@ -171,11 +171,13 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
             {loadingErrorSession && <p>{loadingErrorSession}</p>}
             {loadingErrorPortionLogs && <p>{loadingErrorPortionLogs}</p>}
             {isLoadingSession && <p>Loading prep session...</p>}
-            {isLoadingPortionLogs && <p>Loading portion history...</p>}
+            {isLoadingPortionLogs && <p>Loading meal history...</p>}
             {!isLoadingSession && !loadingErrorSession && prepSession && (
                 <div>
-                    <button type="button" onClick={onBack}>Back to prep sessions</button>
-                    <h1>Prep Session: {prepSession.name}</h1>
+                    <div className="prep-session-heading">
+                        <h1>Prep Session: {prepSession.name}</h1>
+                        <button type="button" onClick={onBack}>Back to prep sessions</button>
+                    </div>
                     <p className="page-lede">{prepSession.sessionDate}</p>
                     {prepSession.notes && <p>Notes: {prepSession.notes}</p>}
                     <button type="button" onClick={openAddBatchForm}>
@@ -228,31 +230,60 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
                             {prepSession.batches?.map((batch) => (
                                 <li key={batch.id} className="batch-card">
                                     <h2>{batch.ingredient.name}</h2>
-                                    <p>Raw: {batch.rawWeightG} g · Cooked: {batch.cookedWeightG} g</p>
-                                    <p>Yield: {formatYield(batch)}</p>
-                                    <p>Available: {calculateAvailableCookedGrams(batch).toFixed(1)} g</p>
+                                    <section className="batch-inventory" aria-label="Batch inventory">
+                                        <dl className="batch-stats">
+                                            <div>
+                                                <dt>Raw</dt>
+                                                <dd>{batch.rawWeightG} g</dd>
+                                            </div>
+                                            <div>
+                                                <dt>Cooked</dt>
+                                                <dd>{batch.cookedWeightG} g</dd>
+                                            </div>
+                                            <div>
+                                                <dt>Yield</dt>
+                                                <dd>{formatYield(batch)}</dd>
+                                            </div>
+                                            <div>
+                                                <dt>Available</dt>
+                                                <dd>{calculateAvailableCookedGrams(batch).toFixed(1)} g</dd>
+                                            </div>
+                                        </dl>
+                                    </section>
                                     {batch.id !== undefined && !isLoadingPortionLogs && (
-                                        <details>
-                                            <summary>Portion history</summary>
-                                            {calculateUsedCookedGrams(batch) === 0 ? (
-                                                <p>No portions logged from this batch yet.</p>
-                                            ) : (
-                                                <ul>
-                                                    {portionLogs.flatMap((log) =>
-                                                        log.lines
-                                                            .filter((line) => line.batchId === batch.id)
-                                                            .map((line) => (
-                                                                <li key={log.id}>
-                                                                    {log.portionDate} · {log.name} · {line.cookedGrams} g used
-                                                                </li>
-                                                            ))
-                                                    )}
-                                                </ul>
-                                            )}
+                                        <details className="batch-history">
+                                            <summary>
+                                                <span className="batch-history-title">
+                                                    <span className="batch-history-indicator" aria-hidden="true">▸</span>
+                                                    Meal history
+                                                </span>
+                                                <span>
+                                                    {calculateUsedCookedGrams(batch) === 0
+                                                        ? "No meals yet"
+                                                        : `${calculateUsedCookedGrams(batch).toFixed(1)} g used`}
+                                                </span>
+                                            </summary>
+                                            <div className="batch-history-content">
+                                                {calculateUsedCookedGrams(batch) === 0 ? (
+                                                    <p>No meals have used this batch yet.</p>
+                                                ) : (
+                                                    <ul>
+                                                        {portionLogs.flatMap((log) =>
+                                                            log.lines
+                                                                .filter((line) => line.batchId === batch.id)
+                                                                .map((line) => (
+                                                                    <li key={log.id}>
+                                                                        {log.portionDate} · {log.name} · {line.cookedGrams} g used
+                                                                    </li>
+                                                                ))
+                                                        )}
+                                                    </ul>
+                                                )}
+                                            </div>
                                         </details>
                                     )}
                                     {batch.id !== undefined && (
-                                        <div className="form-actions">
+                                        <div className="form-actions batch-actions">
                                             <button type="button" onClick={() => openEditBatchForm(batch)}>
                                                 Edit
                                             </button>

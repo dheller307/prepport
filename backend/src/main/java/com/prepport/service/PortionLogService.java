@@ -19,6 +19,7 @@ import com.prepport.dto.PortionLogRequest;
 import com.prepport.dto.PortionLogLineRequest;
 import com.prepport.dto.PortionLogResponse;
 import com.prepport.dto.PortionLogLineResponse;
+import com.prepport.dto.PortionCalculateResponse;
 import com.prepport.entity.User;
 import com.prepport.entity.Batch;
 
@@ -27,11 +28,17 @@ public class PortionLogService {
     private final PortionLogRepository portionLogRepository;
     private final PortionLogLineRepository portionLogLineRepository;
     private final BatchRepository batchRepository;
+    private final PortionService portionService;
 
-    public PortionLogService(PortionLogRepository portionLogRepository, PortionLogLineRepository portionLogLineRepository, BatchRepository batchRepository) {
+    public PortionLogService(
+            PortionLogRepository portionLogRepository,
+            PortionLogLineRepository portionLogLineRepository,
+            BatchRepository batchRepository,
+            PortionService portionService) {
         this.portionLogRepository = portionLogRepository;
         this.portionLogLineRepository = portionLogLineRepository;
         this.batchRepository = batchRepository;
+        this.portionService = portionService;
     }
 
     @Transactional
@@ -96,10 +103,44 @@ public class PortionLogService {
     }
 
     private PortionLogResponse toResponse(PortionLog portionLog) {
-        List<PortionLogLineResponse> lines = portionLog.getLines().stream()
-            .map(line -> new PortionLogLineResponse(line.getBatch().getId(), line.getBatch().getPrepSession().getId(), line.getBatch().getIngredient().getName(), line.getCookedGrams()))
-            .toList();
-        return new PortionLogResponse(portionLog.getId(), portionLog.getName(), portionLog.getPortionDate(), portionLog.getCreatedAt(), lines);
+        List<PortionLogLineResponse> lines = new ArrayList<>();
+        double totalProteinG = 0;
+        double totalCarbsG = 0;
+        double totalFatG = 0;
+        double totalKcal = 0;
+
+        for (PortionLogLine line : portionLog.getLines()) {
+            PortionCalculateResponse calculation = portionService
+                .calculateForBatch(line.getBatch(), line.getCookedGrams());
+
+            lines.add(new PortionLogLineResponse(
+                line.getBatch().getId(),
+                line.getBatch().getPrepSession().getId(),
+                calculation.ingredientName(),
+                line.getCookedGrams(),
+                calculation.cronometerG(),
+                calculation.proteinG(),
+                calculation.carbsG(),
+                calculation.fatG(),
+                calculation.kcal()
+            ));
+            totalProteinG += calculation.proteinG();
+            totalCarbsG += calculation.carbsG();
+            totalFatG += calculation.fatG();
+            totalKcal += calculation.kcal();
+        }
+
+        return new PortionLogResponse(
+            portionLog.getId(),
+            portionLog.getName(),
+            portionLog.getPortionDate(),
+            portionLog.getCreatedAt(),
+            lines,
+            totalProteinG,
+            totalCarbsG,
+            totalFatG,
+            totalKcal
+        );
     }
     
 }

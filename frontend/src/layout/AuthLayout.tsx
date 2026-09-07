@@ -13,7 +13,7 @@ export function AuthLayout({ title, children }: AuthLayoutProps) {
         <header className="auth-header">
           <p className="app-title">PrepPort</p>
           <p className="page-lede">Companion for meal prep</p>
-          <p className="page-lede">Turn cooked portions back into raw-equivalent grams for any nutrition tracker.</p>
+          <p className="page-lede">Build meals from prepared batches and copy nutrition details for any tracker.</p>
           <p className="hint">
             <Link to="/">Tutorial</Link>
           </p>

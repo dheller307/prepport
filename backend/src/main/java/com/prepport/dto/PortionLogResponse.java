@@ -9,5 +9,9 @@ public record PortionLogResponse(
     String name,
     LocalDate portionDate,
     LocalDateTime createdAt,
-    List<PortionLogLineResponse> lines
+    List<PortionLogLineResponse> lines,
+    double totalProteinG,
+    double totalCarbsG,
+    double totalFatG,
+    double totalKcal
 ) {}

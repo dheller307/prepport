@@ -119,6 +119,108 @@ h1 {
   margin-top: 0;
 }
 
+.prep-session-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.prep-session-heading button {
+  flex-shrink: 0;
+}
+
+.batch-inventory {
+  margin-top: 0.75rem;
+}
+
+.batch-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+}
+
+.batch-stats div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.batch-stats dt {
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.batch-stats dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.batch-history {
+  margin-top: 1rem;
+  border: 1px solid #ccc;
+  background-color: #f3f3f3;
+}
+
+.batch-history summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  cursor: pointer;
+  font-weight: 700;
+  list-style: none;
+}
+
+.batch-history summary::-webkit-details-marker {
+  display: none;
+}
+
+.batch-history-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.batch-history-indicator {
+  display: inline-block;
+  transition: transform 150ms ease;
+}
+
+.batch-history[open] .batch-history-indicator {
+  transform: rotate(90deg);
+}
+
+.batch-history summary > span:last-child {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #555;
+}
+
+.batch-history[open] summary {
+  border-bottom: 1px solid #ccc;
+}
+
+.batch-history-content {
+  padding: 0.75rem;
+}
+
+.batch-history-content p,
+.batch-history-content ul {
+  margin: 0;
+}
+
+.batch-history-content ul {
+  padding-left: 1.25rem;
+}
+
+.batch-actions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ccc;
+}
+
 @media (min-width: 40rem) {
   .app-header {
     flex-direction: row;
@@ -134,10 +236,43 @@ h1 {
 }
 
 .portion-line {
+  padding: 1rem;
+  border: 1px solid #ccc;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   margin-bottom: 1rem;
+}
+
+.meal-builder-card {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+}
+
+.meal-builder-heading {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.meal-builder-heading:first-child {
+  margin-top: 0;
+}
+
+.meal-builder-heading h2 {
+  margin: 0;
+}
+
+.step-label {
+  margin: 0 0 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #555;
+}
+
+.meal-line-list {
+  padding: 0;
+  list-style: none;
 }
 
 .portion-line select,
@@ -148,7 +283,72 @@ h1 {
 
 .portion-line-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.meal-nutrition-result,
+.meal-export-result,
+.meal-aggregate-nutrition,
+.meal-card-totals {
+  padding: 0.75rem;
+  background-color: #f3f3f3;
+}
+
+.meal-aggregate-nutrition {
+  margin-bottom: 1rem;
+}
+
+.meal-aggregate-nutrition h3 {
+  margin: 0 0 0.5rem;
+}
+
+.meal-aggregate-nutrition p,
+.meal-card-totals p {
+  margin: 0;
+}
+
+.meal-nutrition-result p {
+  margin: 0;
+}
+
+.meal-nutrition-result p + p {
+  margin-top: 0.5rem;
+}
+
+.meal-finish-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.meal-export-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.meal-export-result h3 {
+  margin: 0;
+}
+
+.meal-export-result .export-pre {
+  margin: 0;
+}
+
+.recent-meals {
+  margin-top: 2rem;
+}
+
+.meal-card-totals {
+  margin-top: 0.75rem;
+}
+
+.card .form-actions {
+  margin-top: 0.75rem;
 }
 
 .export-pre {

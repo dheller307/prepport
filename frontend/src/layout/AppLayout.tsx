@@ -15,8 +15,8 @@ export function AppLayout() {
         <p className="app-title">PrepPort</p>
         <nav className="app-nav">
           <NavLink to="/ingredients">Ingredients</NavLink>
-          <NavLink to="/prep">Prep</NavLink>
-          <NavLink to="/portion">Portion</NavLink>
+          <NavLink to="/prep">Sessions</NavLink>
+          <NavLink to="/portion">Meals</NavLink>
           <NavLink to="/tutorial">Tutorial</NavLink>
         </nav>
         <button type="button" onClick={handleLogout}>

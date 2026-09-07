@@ -31,6 +31,10 @@ public class PortionService {
         return portionCalculateBatch(batch, request.cookedGrams());
     }
 
+    public PortionCalculateResponse calculateForBatch(Batch batch, double cookedGrams) {
+        return portionCalculateBatch(batch, cookedGrams);
+    }
+
     public String exportPortion(PortionExportRequest request, User user) {
         double totalProteinG = 0;
         double totalCarbsG = 0;

@@ -9,8 +9,8 @@ export function HowItWorksPage() {
           <p className="app-title">PrepPort</p>
           <h1>Tutorial</h1>
           <p className="page-lede">
-            PrepPort helps you turn cooked meal-prep portions back into the
-            raw-equivalent amounts nutrition trackers use.
+            PrepPort helps you build meals from prepared batches, track what
+            remains, and copy nutrition details into your tracker.
           </p>
         </header>
 

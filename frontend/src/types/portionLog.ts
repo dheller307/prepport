@@ -13,6 +13,11 @@ export interface PortionLogLineResponse {
     prepSessionId: number;
     ingredientName: string;
     cookedGrams: number;
+    cronometerG: number;
+    proteinG: number;
+    carbsG: number;
+    fatG: number;
+    kcal: number;
 }
 
 export interface PortionLogResponse {
@@ -21,4 +26,8 @@ export interface PortionLogResponse {
     portionDate: string;
     createdAt: string;
     lines: PortionLogLineResponse[];
+    totalProteinG: number;
+    totalCarbsG: number;
+    totalFatG: number;
+    totalKcal: number;
 }
