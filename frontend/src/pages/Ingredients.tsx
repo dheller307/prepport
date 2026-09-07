@@ -165,9 +165,9 @@ export function Ingredients() {
             {isLoading && <p>Loading ingredients...</p>}
             {!isLoading && !loadingError && ingredients.length === 0 && <p>No ingredients yet. Add your first meal-prep food above.</p>}
             {!isLoading && !loadingError && ingredients.length > 0 && (
-                <ul>
+                <ul className="card-list">
                     {ingredients.map((ingredient) => (
-                        <li key={ingredient.id}>
+                        <li key={ingredient.id} className="card ingredient-card">
                             <details>
                                 <summary>
                                     {ingredient.name} · {ingredient.macroBasis.toLowerCase()} basis

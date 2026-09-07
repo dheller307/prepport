@@ -75,6 +75,50 @@ h1 {
   margin-top: 1rem;
 }
 
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 24rem;
+  margin-bottom: 0.75rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.card-list {
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+}
+
+.ingredient-card summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.batch-list {
+  padding: 0;
+  list-style: none;
+}
+
+.batch-card {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+}
+
+.batch-card h2 {
+  margin-top: 0;
+}
+
 @media (min-width: 40rem) {
   .app-header {
     flex-direction: row;

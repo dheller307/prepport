@@ -9,4 +9,5 @@ import com.prepport.entity.User;
 
 public interface BatchRepository extends JpaRepository<Batch, Long> {
     Optional<Batch> findByIdAndPrepSession_IdAndPrepSession_User(Long batchId, Long prepSessionId, User user);
+    Optional<Batch> findByIdAndPrepSession_User(Long batchId, User user);
 }

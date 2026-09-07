@@ -7,6 +7,14 @@ export function listPrepSessions() {
         auth: true,
     });
   }
+
+export function getPrepSession(id: number) {
+    return apiJson<PrepSession>(`/api/prep-sessions/${id}`, {
+        method: "GET",
+        auth: true,
+    });
+}
+
 export function createPrepSession(request: CreatePrepSessionRequest) {
     return apiJson<PrepSession>("/api/prep-sessions", {
         method: "POST",

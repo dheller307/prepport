@@ -150,9 +150,9 @@ export function PrepSessions() {
             {isLoading && <p>Loading prep sessions...</p>}
             {!isLoading && !loadingError && prepSessions.length === 0 && <p>No prep sessions yet.</p>}
             {!isLoading && !loadingError && prepSessions.length > 0 && (
-                <ul>
+                <ul className="card-list">
                     {sessionsNewestFirst.map((prepSession) => (
-                        <li key={prepSession.id}>
+                        <li key={prepSession.id} className="card">
                             <strong>{prepSession.name}</strong> — {prepSession.sessionDate}
                             <p>{prepSession.batches?.length ?? 0} batches</p>
                             {prepSession.notes && <p>Notes: {prepSession.notes}</p>}
