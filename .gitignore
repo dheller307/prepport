@@ -24,3 +24,9 @@ Thumbs.db
 
 # Cursor
 .cursor/
+.cursorignore
+
+# Previous docs
+requests.http
+PLAN.md
+docs/slices/
