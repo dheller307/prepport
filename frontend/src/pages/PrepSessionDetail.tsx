@@ -185,7 +185,7 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
                     </button>
 
                     {isBatchFormOpen && (
-                        <form onSubmit={handleSubmit}>
+                        <form className="entity-form" onSubmit={handleSubmit}>
                             <h2>{editingBatch ? 'Edit batch' : 'Add batch'}</h2>
                             <div className="form-field">
                                 <label htmlFor="ingredientId">Ingredient</label>

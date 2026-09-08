@@ -112,13 +112,13 @@ export function Ingredients() {
             </button>
 
             {isFormOpen && (
-                <form onSubmit={handleSubmit}>
+                <form className="entity-form" onSubmit={handleSubmit}>
                     <h2>{editingIngredient ? 'Edit ingredient' : 'Add ingredient'}</h2>
-                    <div>
+                    <div className="form-field">
                         <label htmlFor="name">Name</label>
                         <input type="text" id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
                     </div>
-                    <div>
+                    <div className="form-field">
                         <label htmlFor="macroBasis">Macros copied from</label>
                         <select id="macroBasis" value={form.macroBasis} onChange={(e) => setForm({ ...form, macroBasis: e.target.value as 'RAW' | 'COOKED' })}>
                             <option value="RAW">Raw food entry</option>
@@ -128,36 +128,38 @@ export function Ingredients() {
                             Use raw unless you copied numbers from a cooked food or a package label. Batches still need raw and cooked weights for yield.
                         </p>
                     </div>
-                    <div>
+                    <div className="form-field">
                         <label htmlFor="proteinPer100g">Protein per 100g</label>
                         <input type="number" id="proteinPer100g" step="0.1" value={form.proteinPer100g === 0 ? '' : form.proteinPer100g} onChange={(e) => setForm({ ...form, proteinPer100g: Number(e.target.value) })} />
                     </div>
-                    <div>
+                    <div className="form-field">
                         <label htmlFor="carbsPer100g">Carbs per 100g</label>
                         <input type="number" id="carbsPer100g" step="0.1" value={form.carbsPer100g === 0 ? '' : form.carbsPer100g} onChange={(e) => setForm({ ...form, carbsPer100g: Number(e.target.value) })} />
                     </div>
-                    <div>
+                    <div className="form-field">
                         <label htmlFor="fatPer100g">Fat per 100g</label>
                         <input type="number" id="fatPer100g" step="0.1" value={form.fatPer100g === 0 ? '' : form.fatPer100g} onChange={(e) => setForm({ ...form, fatPer100g: Number(e.target.value) })} />
                     </div>
-                    <div>
+                    <div className="form-field">
                         <label htmlFor="kcalPer100g">Kcal per 100g</label>
                         <input type="number" id="kcalPer100g" step="0.1" value={form.kcalPer100g === 0 ? '' : form.kcalPer100g} onChange={(e) => setForm({ ...form, kcalPer100g: Number(e.target.value) })} />
                     </div>
-                    <div>
+                    <div className="form-field">
                         <label htmlFor="notes">Notes</label>
                         <textarea id="notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
                     </div>
-                    <button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? 'Saving...' : editingIngredient ? 'Save changes' : 'Add ingredient'}
-                    </button>
-                    <button type="button" onClick={() => {
-                        setForm(emptyIngredientForm);
-                        setEditingIngredient(null);
-                        setIsFormOpen(false);
-                    }}>
-                        Cancel
-                    </button>
+                    <div className="form-actions">
+                        <button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? 'Saving...' : editingIngredient ? 'Save changes' : 'Add ingredient'}
+                        </button>
+                        <button type="button" onClick={() => {
+                            setForm(emptyIngredientForm);
+                            setEditingIngredient(null);
+                            setIsFormOpen(false);
+                        }}>
+                            Cancel
+                        </button>
+                    </div>
                 </form>
             )}
             {submissionError && <p>{submissionError}</p>}

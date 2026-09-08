@@ -119,30 +119,32 @@ export function PrepSessions() {
             </button>
 
             {isFormOpen && (
-                <form onSubmit={handleSubmit}>
+                <form className="entity-form" onSubmit={handleSubmit}>
                     <h2>{editingSession ? 'Edit prep session' : 'New prep session'}</h2>
-                    <div>
+                    <div className="form-field">
                         <label htmlFor="name">Name</label>
                         <input type="text" id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
                     </div>
-                    <div>
+                    <div className="form-field">
                         <label htmlFor="sessionDate">Session Date</label>
                         <input type="date" id="sessionDate" value={form.sessionDate} onChange={(e) => setForm({ ...form, sessionDate: e.target.value })} required />
                     </div>
-                    <div>
+                    <div className="form-field">
                         <label htmlFor="notes">Notes</label>
                         <textarea id="notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
                     </div>
-                    <button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? 'Saving...' : editingSession ? 'Save changes' : 'Add prep session'}
-                    </button>
-                    <button type="button" onClick={() => {
-                        setEditingSession(null);
-                        setForm(emptyPrepSessionForm());
-                        setIsFormOpen(false);
-                    }}>
-                        Cancel
-                    </button>
+                    <div className="form-actions">
+                        <button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? 'Saving...' : editingSession ? 'Save changes' : 'Add prep session'}
+                        </button>
+                        <button type="button" onClick={() => {
+                            setEditingSession(null);
+                            setForm(emptyPrepSessionForm());
+                            setIsFormOpen(false);
+                        }}>
+                            Cancel
+                        </button>
+                    </div>
                 </form>
             )}
             {submissionError && <p>{submissionError}</p>}

@@ -88,6 +88,22 @@ h1 {
   gap: 0.5rem;
 }
 
+.entity-form {
+  max-width: 32rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  background-color: #f3f3f3;
+}
+
+.entity-form h2 {
+  margin-top: 0;
+}
+
+.entity-form .form-actions {
+  margin-top: 1rem;
+}
+
 .card-list {
   padding: 0;
   list-style: none;
