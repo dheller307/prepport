@@ -12,7 +12,9 @@ export function RegisterPage() {
 
   return (
     <AuthLayout title="Create account">
-      <RegisterForm onSuccess={() => navigate("/ingredients", { replace: true })} />
+      <RegisterForm
+        onSuccess={() => navigate("/ingredients", { replace: true })}
+      />
       <p>
         Already have an account? <Link to="/login">Log in</Link>
       </p>

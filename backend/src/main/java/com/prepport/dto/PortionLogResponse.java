@@ -13,5 +13,4 @@ public record PortionLogResponse(
     double totalProteinG,
     double totalCarbsG,
     double totalFatG,
-    double totalKcal
-) {}
+    double totalKcal) {}

@@ -1,7 +1,6 @@
 package com.prepport.entity;
 
-import java.time.LocalDateTime;
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,86 +10,85 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "batches")
 public class Batch {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "prep_session_id", nullable = false)
-    private PrepSession prepSession;
-    
-    @ManyToOne
-    @JoinColumn(name = "ingredient_id", nullable = false)
-    private Ingredient ingredient;
-    
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+  @ManyToOne
+  @JoinColumn(name = "prep_session_id", nullable = false)
+  private PrepSession prepSession;
 
-    @Column(name = "raw_weight_g", nullable = false)
-    private Double rawWeightG;
+  @ManyToOne
+  @JoinColumn(name = "ingredient_id", nullable = false)
+  private Ingredient ingredient;
 
-    @Column(name = "cooked_weight_g", nullable = false)
-    private Double cookedWeightG;
+  @Column(name = "created_at", nullable = false)
+  private LocalDateTime createdAt;
 
-    protected Batch() {
+  @Column(name = "raw_weight_g", nullable = false)
+  private Double rawWeightG;
+
+  @Column(name = "cooked_weight_g", nullable = false)
+  private Double cookedWeightG;
+
+  protected Batch() {}
+
+  public Batch(Ingredient ingredient, Double rawWeightG, Double cookedWeightG) {
+    this.ingredient = ingredient;
+    this.rawWeightG = rawWeightG;
+    this.cookedWeightG = cookedWeightG;
+  }
+
+  @PrePersist
+  void onCreate() {
+    if (this.createdAt == null) {
+      this.createdAt = LocalDateTime.now();
     }
+  }
 
-    public Batch(Ingredient ingredient, Double rawWeightG, Double cookedWeightG) {
-        this.ingredient = ingredient;
-        this.rawWeightG = rawWeightG;
-        this.cookedWeightG = cookedWeightG;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    @PrePersist
-    void onCreate() {
-        if (this.createdAt == null) {
-            this.createdAt = LocalDateTime.now();
-        }
-    }
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
 
-    public Long getId() {
-        return id;
-    }
-    
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+  public Double getRawWeightG() {
+    return rawWeightG;
+  }
 
-    public Double getRawWeightG() {
-        return rawWeightG;
-    }
+  public Double getCookedWeightG() {
+    return cookedWeightG;
+  }
 
-    public Double getCookedWeightG() {
-        return cookedWeightG;
-    }
+  @JsonBackReference
+  public PrepSession getPrepSession() {
+    return prepSession;
+  }
 
-    @JsonBackReference
-    public PrepSession getPrepSession() {
-        return prepSession;
-    }
+  public Ingredient getIngredient() {
+    return ingredient;
+  }
 
-    public Ingredient getIngredient() {
-        return ingredient;
-    }
+  public void setRawWeightG(Double rawWeightG) {
+    this.rawWeightG = rawWeightG;
+  }
 
-    public void setRawWeightG(Double rawWeightG) {
-        this.rawWeightG = rawWeightG;
-    }
-    
-    public void setCookedWeightG(Double cookedWeightG) {
-        this.cookedWeightG = cookedWeightG;
-    }
+  public void setCookedWeightG(Double cookedWeightG) {
+    this.cookedWeightG = cookedWeightG;
+  }
 
-    public void setPrepSession(PrepSession prepSession) {
-        this.prepSession = prepSession;
-    }
+  public void setPrepSession(PrepSession prepSession) {
+    this.prepSession = prepSession;
+  }
 
-    public void setIngredient(Ingredient ingredient) {
-        this.ingredient = ingredient;
-    }
+  public void setIngredient(Ingredient ingredient) {
+    this.ingredient = ingredient;
+  }
 }

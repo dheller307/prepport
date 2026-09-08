@@ -1,108 +1,105 @@
 package com.prepport.entity;
 
-import java.time.LocalDateTime;
-import java.time.LocalDate;
-import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "prep_sessions")
 public class PrepSession {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
-    @OneToMany(mappedBy = "prepSession", fetch = FetchType.EAGER)
-    private List<Batch> batches;
-    
-    @Column(name = "name", nullable = false)
-    private String name;
+  @OneToMany(mappedBy = "prepSession", fetch = FetchType.EAGER)
+  private List<Batch> batches;
 
-    @Column(name = "session_date", nullable = false)
-    private LocalDate sessionDate;
+  @Column(name = "name", nullable = false)
+  private String name;
 
-    @Column(name = "notes")
-    private String notes;
+  @Column(name = "session_date", nullable = false)
+  private LocalDate sessionDate;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+  @Column(name = "notes")
+  private String notes;
 
-    protected PrepSession() {
+  @Column(name = "created_at", nullable = false)
+  private LocalDateTime createdAt;
+
+  protected PrepSession() {}
+
+  public PrepSession(String name, LocalDate sessionDate) {
+    this.name = name;
+    this.sessionDate = sessionDate;
+  }
+
+  @PrePersist
+  void onCreate() {
+    if (this.createdAt == null) {
+      this.createdAt = LocalDateTime.now();
     }
+  }
 
-    public PrepSession(String name, LocalDate sessionDate) {
-        this.name = name;
-        this.sessionDate = sessionDate;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    @PrePersist
-    void onCreate() {
-        if (this.createdAt == null) {
-            this.createdAt = LocalDateTime.now();
-        }
-    }
+  public String getName() {
+    return name;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public LocalDate getSessionDate() {
+    return sessionDate;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getNotes() {
+    return notes;
+  }
 
-    public LocalDate getSessionDate() {
-        return sessionDate;
-    }
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
 
-    public String getNotes() {
-        return notes;
-    }
+  @JsonManagedReference
+  public List<Batch> getBatches() {
+    return batches;
+  }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+  @JsonIgnore
+  public User getUser() {
+    return user;
+  }
 
-    @JsonManagedReference
-    public List<Batch> getBatches() {
-        return batches;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    @JsonIgnore
-    public User getUser() {
-        return user;
-    }
+  public void setSessionDate(LocalDate sessionDate) {
+    this.sessionDate = sessionDate;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setNotes(String notes) {
+    this.notes = notes;
+  }
 
-    public void setSessionDate(LocalDate sessionDate) {
-        this.sessionDate = sessionDate;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+  public void setUser(User user) {
+    this.user = user;
+  }
 }

@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class PrepPortApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(PrepPortApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(PrepPortApplication.class, args);
+  }
 }

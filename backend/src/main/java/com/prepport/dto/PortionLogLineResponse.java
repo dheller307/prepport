@@ -9,5 +9,4 @@ public record PortionLogLineResponse(
     double proteinG,
     double carbsG,
     double fatG,
-    double kcal
-) {}
+    double kcal) {}

@@ -55,6 +55,12 @@ body {
   color: #555;
 }
 
+.form-error {
+  margin: 0.75rem 0 0;
+  color: #a00000;
+  font-weight: 700;
+}
+
 h1 {
   margin: 0 0 0.5rem;
   font-size: 1.5rem;

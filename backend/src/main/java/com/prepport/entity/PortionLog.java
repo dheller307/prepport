@@ -1,110 +1,106 @@
 package com.prepport.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.LocalDate;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.CascadeType;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "portion_logs")
 public class PortionLog {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+  @Column(name = "name", nullable = false)
+  private String name;
 
-    @Column(name = "portion_date", nullable = false)
-    private LocalDate portionDate;
+  @Column(name = "portion_date", nullable = false)
+  private LocalDate portionDate;
 
-    @OneToMany(mappedBy = "portionLog", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PortionLogLine> lines = new ArrayList<>();
+  @OneToMany(mappedBy = "portionLog", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<PortionLogLine> lines = new ArrayList<>();
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+  @Column(name = "created_at", nullable = false)
+  private LocalDateTime createdAt;
 
-    protected PortionLog() {
+  protected PortionLog() {}
+
+  public PortionLog(String name, LocalDate portionDate) {
+    this.name = name;
+    this.portionDate = portionDate;
+  }
+
+  @PrePersist
+  void onCreate() {
+    if (this.createdAt == null) {
+      this.createdAt = LocalDateTime.now();
     }
+  }
 
-    public PortionLog(String name, LocalDate portionDate) {
-        this.name = name;
-        this.portionDate = portionDate;
+  public void addLine(PortionLogLine line) {
+    lines.add(line);
+    line.setPortionLog(this);
+  }
+
+  public void replaceLines(List<PortionLogLine> lines) {
+    this.lines.clear();
+
+    for (PortionLogLine line : lines) {
+      addLine(line);
     }
+  }
 
-    @PrePersist
-    void onCreate() {
-        if (this.createdAt == null) {
-            this.createdAt = LocalDateTime.now();
-        }
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void addLine(PortionLogLine line) {
-        lines.add(line);
-        line.setPortionLog(this);
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void replaceLines(List<PortionLogLine> lines) {
-        this.lines.clear();
+  public LocalDate getPortionDate() {
+    return portionDate;
+  }
 
-        for (PortionLogLine line : lines) {
-            addLine(line);
-        }
-    }
+  public List<PortionLogLine> getLines() {
+    return lines;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
 
-    public String getName() {
-        return name;
-    }
+  @JsonIgnore
+  public User getUser() {
+    return user;
+  }
 
-    public LocalDate getPortionDate() {
-        return portionDate;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public List<PortionLogLine> getLines() {
-        return lines;
-    }
+  public void setPortionDate(LocalDate portionDate) {
+    this.portionDate = portionDate;
+  }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    @JsonIgnore
-    public User getUser() {
-        return user;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public void setPortionDate(LocalDate portionDate) {
-        this.portionDate = portionDate;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
+  public void setUser(User user) {
+    this.user = user;
+  }
 }

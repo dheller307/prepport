@@ -1,11 +1,8 @@
 package com.prepport.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.Valid;
-
-public record PortionExportRequest(
-    @Valid @NotNull @NotEmpty List<PortionCalculateRequest> lines
-) {}
+public record PortionExportRequest(@Valid @NotNull @NotEmpty List<PortionCalculateRequest> lines) {}

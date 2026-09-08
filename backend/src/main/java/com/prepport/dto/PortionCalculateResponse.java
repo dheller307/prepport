@@ -11,5 +11,4 @@ public record PortionCalculateResponse(
     @NotNull @PositiveOrZero Double proteinG,
     @NotNull @PositiveOrZero Double fatG,
     @NotNull @PositiveOrZero Double carbsG,
-    @NotNull @Positive Double kcal
-) {}
+    @NotNull @Positive Double kcal) {}

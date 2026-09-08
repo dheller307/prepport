@@ -12,7 +12,9 @@ export function LoginPage() {
 
   return (
     <AuthLayout title="Log in">
-      <LoginForm onSuccess={() => navigate("/ingredients", { replace: true })} />
+      <LoginForm
+        onSuccess={() => navigate("/ingredients", { replace: true })}
+      />
       <p>
         Don't have an account? <Link to="/register">Create account</Link>
       </p>
