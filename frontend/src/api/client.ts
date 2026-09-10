@@ -13,6 +13,12 @@ async function request<T>(
   options: ApiOptions = {},
   responseType: "json" | "text" = "json",
 ): Promise<T> {
+  if (!baseUrl) {
+    throw new Error(
+      "VITE_API_URL is not configured. Add it to frontend/.env.local before starting the app.",
+    );
+  }
+
   const { method = "GET", body, auth = true } = options;
 
   const headers: Record<string, string> = {
@@ -35,6 +41,9 @@ async function request<T>(
   if (!response.ok) {
     if (response.status === 401 && auth) {
       clearToken();
+      if (window.location.pathname !== "/login") {
+        window.location.assign("/login");
+      }
     }
     const responseText = await response.text();
     let message = responseText;

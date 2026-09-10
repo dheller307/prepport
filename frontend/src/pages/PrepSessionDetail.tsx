@@ -215,9 +215,11 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
 
   return (
     <div>
-      {submissionError && <p>{submissionError}</p>}
-      {loadingErrorSession && <p>{loadingErrorSession}</p>}
-      {loadingErrorPortionLogs && <p>{loadingErrorPortionLogs}</p>}
+      {loadingErrorSession && (
+        <p className="form-error" role="alert">
+          {loadingErrorSession}
+        </p>
+      )}
       {isLoadingSession && <p>Loading prep session...</p>}
       {isLoadingPortionLogs && <p>Loading meal history...</p>}
       {!isLoadingSession && !loadingErrorSession && prepSession && (
@@ -230,6 +232,16 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
           </div>
           <p className="page-lede">{prepSession.sessionDate}</p>
           {prepSession.notes && <p>Notes: {prepSession.notes}</p>}
+          {submissionError && (
+            <p className="form-error" role="alert">
+              {submissionError}
+            </p>
+          )}
+          {loadingErrorPortionLogs && (
+            <p className="form-error" role="alert">
+              {loadingErrorPortionLogs}
+            </p>
+          )}
           <button type="button" onClick={openAddBatchForm}>
             Add batch
           </button>
@@ -239,7 +251,11 @@ export function PrepSessionDetail({ id, onBack }: PrepSessionDetailProps) {
               <h2>{editingBatch ? "Edit batch" : "Add batch"}</h2>
               <div className="form-field">
                 <label htmlFor="ingredientId">Ingredient</label>
-                {loadingErrorIngredients && <p>{loadingErrorIngredients}</p>}
+                {loadingErrorIngredients && (
+                  <p className="form-error" role="alert">
+                    {loadingErrorIngredients}
+                  </p>
+                )}
                 <select
                   id="ingredientId"
                   value={form.ingredientId || ""}

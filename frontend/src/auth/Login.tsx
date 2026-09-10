@@ -33,7 +33,11 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   };
   return (
     <form onSubmit={handleSubmit}>
-      {error && <p>{error}</p>}
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
       <div>
         <label htmlFor="email">Email</label>
         <input

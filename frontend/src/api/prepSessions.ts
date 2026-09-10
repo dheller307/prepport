@@ -1,5 +1,6 @@
 import type {
   CreatePrepSessionRequest,
+  PrepSessionDeletionImpact,
   PrepSession,
 } from "../types/prepSession";
 import { apiJson } from "./client";
@@ -29,8 +30,16 @@ export function updatePrepSession(
   });
 }
 
-export function deletePrepSession(id: number) {
-  return apiJson<void>(`/api/prep-sessions/${id}`, {
+export function getPrepSessionDeletionImpact(id: number) {
+  return apiJson<PrepSessionDeletionImpact>(
+    `/api/prep-sessions/${id}/deletion-impact`,
+  );
+}
+
+export function deletePrepSession(id: number, deleteAssociatedMeals = false) {
+  const query = deleteAssociatedMeals ? "?deleteAssociatedMeals=true" : "";
+
+  return apiJson<void>(`/api/prep-sessions/${id}${query}`, {
     method: "DELETE",
   });
 }

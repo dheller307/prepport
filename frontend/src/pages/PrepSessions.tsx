@@ -6,6 +6,7 @@ import {
   createPrepSession,
   updatePrepSession,
   deletePrepSession,
+  getPrepSessionDeletionImpact,
 } from "../api/prepSessions";
 
 export function PrepSessions() {
@@ -15,6 +16,7 @@ export function PrepSessions() {
   );
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -57,23 +59,22 @@ export function PrepSessions() {
     setIsFormOpen(true);
   }
 
-  useEffect(() => {
-    async function loadPrepSessions() {
-      setLoadingError(null);
-      setIsLoading(true);
-      try {
-        const response = await listPrepSessions();
-        setPrepSessions(response);
-      } catch (error) {
-        setLoadingError(
-          error instanceof Error
-            ? error.message
-            : "Failed to load prep sessions",
-        );
-      } finally {
-        setIsLoading(false);
-      }
+  async function loadPrepSessions() {
+    setLoadingError(null);
+    setIsLoading(true);
+    try {
+      const response = await listPrepSessions();
+      setPrepSessions(response);
+    } catch (error) {
+      setLoadingError(
+        error instanceof Error ? error.message : "Failed to load prep sessions",
+      );
+    } finally {
+      setIsLoading(false);
     }
+  }
+
+  useEffect(() => {
     loadPrepSessions();
   }, []);
 
@@ -108,17 +109,31 @@ export function PrepSessions() {
   };
 
   async function handleDelete(id: number) {
-    if (!window.confirm("Are you sure you want to delete this prep session?")) {
-      return;
-    }
+    setActionError(null);
     setIsDeleting(true);
+
     try {
-      await deletePrepSession(id);
+      const impact = await getPrepSessionDeletionImpact(id);
+      const mealWarning =
+        impact.affectedMealCount === 0
+          ? "This will permanently delete the prep session and its batches."
+          : `This will permanently delete the prep session, its batches, and ${impact.affectedMealCount} saved meal${impact.affectedMealCount === 1 ? "" : "s"}.`;
+      const crossSessionWarning = impact.hasCrossSessionMeals
+        ? "\n\nSome affected meals also use batches from other prep sessions. Deleting this session will delete those entire meals. The other sessions, batches, and ingredients remain."
+        : "";
+
+      if (
+        !window.confirm(`${mealWarning}${crossSessionWarning}\n\nContinue?`)
+      ) {
+        return;
+      }
+
+      await deletePrepSession(id, impact.affectedMealCount > 0);
       setPrepSessions((current) =>
         current.filter((session) => session.id !== id),
       );
     } catch (error) {
-      setLoadingError(
+      setActionError(
         error instanceof Error
           ? error.message
           : "Failed to delete prep session",
@@ -132,7 +147,10 @@ export function PrepSessions() {
     return (
       <PrepSessionDetail
         id={selectedSessionId}
-        onBack={() => setSelectedSessionId(null)}
+        onBack={() => {
+          setSelectedSessionId(null);
+          void loadPrepSessions();
+        }}
       />
     );
   }
@@ -186,6 +204,11 @@ export function PrepSessions() {
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
             />
           </div>
+          {submissionError && (
+            <p className="form-error" role="alert">
+              {submissionError}
+            </p>
+          )}
           <div className="form-actions">
             <button type="submit" disabled={isSubmitting || !form.name.trim()}>
               {isSubmitting
@@ -207,53 +230,63 @@ export function PrepSessions() {
           </div>
         </form>
       )}
-      {submissionError && <p>{submissionError}</p>}
-      {loadingError && <p>{loadingError}</p>}
+      {loadingError && (
+        <p className="form-error" role="alert">
+          {loadingError}
+        </p>
+      )}
       {isLoading && <p>Loading prep sessions...</p>}
       {!isLoading && !loadingError && prepSessions.length === 0 && (
         <p>No prep sessions yet.</p>
       )}
       {!isLoading && !loadingError && prepSessions.length > 0 && (
-        <ul className="card-list">
-          {sessionsNewestFirst.map((prepSession) => (
-            <li key={prepSession.id} className="card">
-              <strong>{prepSession.name}</strong> — {prepSession.sessionDate}
-              <p>{prepSession.batches?.length ?? 0} batches</p>
-              {prepSession.notes && <p>Notes: {prepSession.notes}</p>}
-              {prepSession.id !== undefined && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (prepSession.id !== undefined) {
-                        setSelectedSessionId(prepSession.id);
-                      }
-                    }}
-                  >
-                    View batches
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => openEditForm(prepSession)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (prepSession.id !== undefined) {
-                        handleDelete(prepSession.id);
-                      }
-                    }}
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? "Deleting..." : "Delete"}
-                  </button>
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
+        <>
+          {actionError && (
+            <p className="form-error" role="alert">
+              {actionError}
+            </p>
+          )}
+          <ul className="card-list">
+            {sessionsNewestFirst.map((prepSession) => (
+              <li key={prepSession.id} className="card">
+                <strong>{prepSession.name}</strong> — {prepSession.sessionDate}
+                <p>{prepSession.batches?.length ?? 0} batches</p>
+                {prepSession.notes && <p>Notes: {prepSession.notes}</p>}
+                {prepSession.id !== undefined && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (prepSession.id !== undefined) {
+                          setSelectedSessionId(prepSession.id);
+                        }
+                      }}
+                    >
+                      View batches
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openEditForm(prepSession)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (prepSession.id !== undefined) {
+                          handleDelete(prepSession.id);
+                        }
+                      }}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? "Deleting..." : "Delete"}
+                    </button>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </div>
   );

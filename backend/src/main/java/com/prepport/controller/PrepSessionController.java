@@ -1,6 +1,7 @@
 package com.prepport.controller;
 
 import com.prepport.dto.CreateBatchRequest;
+import com.prepport.dto.PrepSessionDeletionImpact;
 import com.prepport.dto.PrepSessionRequest;
 import com.prepport.entity.Batch;
 import com.prepport.entity.Ingredient;
@@ -8,7 +9,9 @@ import com.prepport.entity.PrepSession;
 import com.prepport.entity.User;
 import com.prepport.repository.BatchRepository;
 import com.prepport.repository.IngredientRepository;
+import com.prepport.repository.PortionLogLineRepository;
 import com.prepport.repository.PrepSessionRepository;
+import com.prepport.service.PrepSessionService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,14 +35,20 @@ public class PrepSessionController {
   private final PrepSessionRepository repository;
   private final BatchRepository batchRepository;
   private final IngredientRepository ingredientRepository;
+  private final PortionLogLineRepository portionLogLineRepository;
+  private final PrepSessionService prepSessionService;
 
   public PrepSessionController(
       PrepSessionRepository repository,
       BatchRepository batchRepository,
-      IngredientRepository ingredientRepository) {
+      IngredientRepository ingredientRepository,
+      PortionLogLineRepository portionLogLineRepository,
+      PrepSessionService prepSessionService) {
     this.repository = repository;
     this.batchRepository = batchRepository;
     this.ingredientRepository = ingredientRepository;
+    this.portionLogLineRepository = portionLogLineRepository;
+    this.prepSessionService = prepSessionService;
   }
 
   @PostMapping
@@ -84,6 +94,12 @@ public class PrepSessionController {
             .findByIdAndPrepSession_IdAndPrepSession_User(batchId, sessionId, user)
             .orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Batch not found"));
+    double alreadyUsed = portionLogLineRepository.sumCookedGramsByBatchId(batchId);
+    if (request.cookedWeightG() < alreadyUsed) {
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST,
+          "Cooked weight cannot be less than " + alreadyUsed + " g already used in saved meals.");
+    }
     batch.setIngredient(
         ingredientRepository
             .findByIdAndUser(request.ingredientId(), user)
@@ -100,12 +116,7 @@ public class PrepSessionController {
       @PathVariable Long sessionId,
       @PathVariable Long batchId,
       @AuthenticationPrincipal User user) {
-    Batch batch =
-        batchRepository
-            .findByIdAndPrepSession_IdAndPrepSession_User(batchId, sessionId, user)
-            .orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Batch not found"));
-    batchRepository.delete(batch);
+    prepSessionService.deleteBatch(sessionId, batchId, user);
   }
 
   @GetMapping
@@ -119,6 +130,12 @@ public class PrepSessionController {
         .findByIdAndUser(id, user)
         .orElseThrow(
             () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Prep session not found"));
+  }
+
+  @GetMapping("/{id}/deletion-impact")
+  public PrepSessionDeletionImpact getDeletionImpact(
+      @PathVariable Long id, @AuthenticationPrincipal User user) {
+    return prepSessionService.getDeletionImpact(id, user);
   }
 
   @PutMapping("/{id}")
@@ -139,12 +156,10 @@ public class PrepSessionController {
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deletePrepSession(@PathVariable Long id, @AuthenticationPrincipal User user) {
-    PrepSession prepSessionToDelete =
-        repository
-            .findByIdAndUser(id, user)
-            .orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Prep session not found"));
-    repository.delete(prepSessionToDelete);
+  public void deletePrepSession(
+      @PathVariable Long id,
+      @RequestParam(defaultValue = "false") boolean deleteAssociatedMeals,
+      @AuthenticationPrincipal User user) {
+    prepSessionService.deletePrepSession(id, deleteAssociatedMeals, user);
   }
 }

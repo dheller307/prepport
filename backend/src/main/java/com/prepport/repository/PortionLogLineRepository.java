@@ -23,4 +23,6 @@ public interface PortionLogLineRepository extends JpaRepository<PortionLogLine, 
         where line.batch.id = :batchId
     """)
   double sumCookedGramsByBatchId(@Param("batchId") Long batchId);
+
+  boolean existsByBatch_Id(Long batchId);
 }

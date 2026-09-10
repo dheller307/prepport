@@ -1,6 +1,8 @@
 package com.prepport.controller;
 
 import com.prepport.dto.ApiErrorResponse;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -28,5 +30,12 @@ public class ApiExceptionHandler {
         fieldError == null ? "One or more fields are invalid" : fieldError.getDefaultMessage();
 
     return ResponseEntity.badRequest().body(new ApiErrorResponse(message));
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(
+      DataIntegrityViolationException exception) {
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(new ApiErrorResponse("This record is still used by other saved data."));
   }
 }

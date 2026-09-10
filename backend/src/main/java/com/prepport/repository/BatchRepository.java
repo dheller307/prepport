@@ -10,4 +10,6 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
       Long batchId, Long prepSessionId, User user);
 
   Optional<Batch> findByIdAndPrepSession_User(Long batchId, User user);
+
+  boolean existsByIngredient_Id(Long ingredientId);
 }

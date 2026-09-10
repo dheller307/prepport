@@ -98,12 +98,16 @@ export function PortionBuilder() {
     setLines([]);
     setResults([]);
     setExportText(null);
+    setExportError(null);
     setPortionLogName("");
     setPortionDate(getTodayLocalDateString());
     setEditingPortionLogId(null);
   }
 
-  function calculateAvailableCookedGrams(batchId: number) {
+  function calculateAvailableCookedGrams(
+    batchId: number,
+    currentLineIndex: number,
+  ) {
     const batch = batches.find((batch) => batch.id === batchId);
 
     if (!batch) {
@@ -116,7 +120,16 @@ export function PortionBuilder() {
       .filter((line) => line.batchId === batchId)
       .reduce((total, line) => total + line.cookedGrams, 0);
 
-    return batch.cookedWeightG - usedCookedGrams;
+    const otherCurrentLineGrams = lines
+      .filter(
+        (line, index) => index !== currentLineIndex && line.batchId === batchId,
+      )
+      .reduce((total, line) => total + line.cookedGrams, 0);
+
+    return Math.max(
+      0,
+      batch.cookedWeightG - usedCookedGrams - otherCurrentLineGrams,
+    );
   }
 
   function handleAddLine() {
@@ -284,6 +297,8 @@ export function PortionBuilder() {
     setPortionDate(portionLog.portionDate);
     setEditingPortionLogId(portionLog.id);
     setPortionLogError(null);
+    setExportText(null);
+    setExportError(null);
   }
 
   async function handleDeletePortionLog(id: number) {
@@ -328,7 +343,11 @@ export function PortionBuilder() {
         Combine cooked amounts from your prep batches into one meal, then save
         it or copy its nutrition-tracker text.
       </p>
-      {prepSessionLoadingError && <p>{prepSessionLoadingError}</p>}
+      {prepSessionLoadingError && (
+        <p className="form-error" role="alert">
+          {prepSessionLoadingError}
+        </p>
+      )}
       {prepSessionIsLoading && <p>Loading prep sessions...</p>}
       {!prepSessionIsLoading &&
         !prepSessionLoadingError &&
@@ -397,7 +416,7 @@ export function PortionBuilder() {
                       {line.batchId > 0 && (
                         <p className="hint">
                           {formatAmount(
-                            calculateAvailableCookedGrams(line.batchId),
+                            calculateAvailableCookedGrams(line.batchId, index),
                           )}{" "}
                           g available
                         </p>
@@ -435,7 +454,11 @@ export function PortionBuilder() {
                       )}
                     </li>
                   ))}
-                  {calculateError && <p>{calculateError}</p>}
+                  {calculateError && (
+                    <p className="form-error" role="alert">
+                      {calculateError}
+                    </p>
+                  )}
                   {isCalculating && <p>Calculating...</p>}
                 </ul>
               )}
@@ -530,7 +553,11 @@ export function PortionBuilder() {
                   {portionLogError}
                 </p>
               )}
-              {exportError && <p>{exportError}</p>}
+              {exportError && (
+                <p className="form-error" role="alert">
+                  {exportError}
+                </p>
+              )}
               {exportText && (
                 <div className="meal-export-result">
                   <h3>Nutrition-tracker text</h3>

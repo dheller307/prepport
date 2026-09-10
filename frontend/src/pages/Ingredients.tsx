@@ -21,6 +21,7 @@ export function Ingredients() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -105,6 +106,7 @@ export function Ingredients() {
       return;
     }
 
+    setActionError(null);
     setIsDeleting(true);
     try {
       await deleteIngredient(id);
@@ -112,7 +114,7 @@ export function Ingredients() {
         current.filter((ingredient) => ingredient.id !== id),
       );
     } catch (error) {
-      setLoadingError(
+      setActionError(
         error instanceof Error ? error.message : "Failed to delete ingredient",
       );
     } finally {
@@ -224,6 +226,11 @@ export function Ingredients() {
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
             />
           </div>
+          {submissionError && (
+            <p className="form-error" role="alert">
+              {submissionError}
+            </p>
+          )}
           <div className="form-actions">
             <button type="submit" disabled={isSubmitting || !form.name.trim()}>
               {isSubmitting
@@ -245,52 +252,62 @@ export function Ingredients() {
           </div>
         </form>
       )}
-      {submissionError && <p>{submissionError}</p>}
-      {loadingError && <p>{loadingError}</p>}
+      {loadingError && (
+        <p className="form-error" role="alert">
+          {loadingError}
+        </p>
+      )}
       {isLoading && <p>Loading ingredients...</p>}
       {!isLoading && !loadingError && ingredients.length === 0 && (
         <p>No ingredients yet. Add your first meal-prep food above.</p>
       )}
       {!isLoading && !loadingError && ingredients.length > 0 && (
-        <ul className="card-list">
-          {ingredients.map((ingredient) => (
-            <li key={ingredient.id} className="card ingredient-card">
-              <details>
-                <summary>
-                  {ingredient.name} · {ingredient.macroBasis.toLowerCase()}{" "}
-                  basis
-                </summary>
-                <p>
-                  Protein: {ingredient.proteinPer100g} g · Carbs:{" "}
-                  {ingredient.carbsPer100g} g · Fat: {ingredient.fatPer100g} g ·{" "}
-                  {ingredient.kcalPer100g} kcal per 100 g
-                </p>
-                {ingredient.notes && <p>Notes: {ingredient.notes}</p>}
-                {ingredient.id !== undefined && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => openEditForm(ingredient)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (ingredient.id !== undefined) {
-                          handleDelete(ingredient.id);
-                        }
-                      }}
-                      disabled={isDeleting}
-                    >
-                      {isDeleting ? "Deleting..." : "Delete"}
-                    </button>
-                  </>
-                )}
-              </details>
-            </li>
-          ))}
-        </ul>
+        <>
+          {actionError && (
+            <p className="form-error" role="alert">
+              {actionError}
+            </p>
+          )}
+          <ul className="card-list">
+            {ingredients.map((ingredient) => (
+              <li key={ingredient.id} className="card ingredient-card">
+                <details>
+                  <summary>
+                    {ingredient.name} · {ingredient.macroBasis.toLowerCase()}{" "}
+                    basis
+                  </summary>
+                  <p>
+                    Protein: {ingredient.proteinPer100g} g · Carbs:{" "}
+                    {ingredient.carbsPer100g} g · Fat: {ingredient.fatPer100g} g
+                    · {ingredient.kcalPer100g} kcal per 100 g
+                  </p>
+                  {ingredient.notes && <p>Notes: {ingredient.notes}</p>}
+                  {ingredient.id !== undefined && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => openEditForm(ingredient)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (ingredient.id !== undefined) {
+                            handleDelete(ingredient.id);
+                          }
+                        }}
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? "Deleting..." : "Delete"}
+                      </button>
+                    </>
+                  )}
+                </details>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </div>
   );

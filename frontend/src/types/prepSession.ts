@@ -14,3 +14,8 @@ export interface CreatePrepSessionRequest {
   sessionDate: string;
   notes?: string;
 }
+
+export interface PrepSessionDeletionImpact {
+  affectedMealCount: number;
+  hasCrossSessionMeals: boolean;
+}
