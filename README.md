@@ -133,6 +133,6 @@ cd backend
 
 ## Deployment
 
-PrepPort is deployed at [prepport.duckdns.org](https://prepport.duckdns.org).
+The existing Lightsail deployment serves the API and PostgreSQL through Docker Compose. The repository also includes configuration for deploying the Vite frontend to Vercel, running the Spring Boot API on Render, and moving the database to Neon. Follow the [free-tier deployment guide](docs/deploy-free.md) for setup, data migration, verification, and Lightsail retirement.
 
-The current deployment uses an AWS Lightsail Linux instance. The Spring Boot API and PostgreSQL database run in Docker containers with Docker Compose, while the React frontend is built separately and configured to use the deployed API.
+See the [PrepPort interview guide](docs/interview-guide.md) for a demo script, stack decisions, and a walkthrough of the Java and React code.
