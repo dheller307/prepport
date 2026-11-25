@@ -24,6 +24,7 @@ export function AuthLayout({ title, children }: AuthLayoutProps) {
             <AppPreviewLink />
             <Link to="/">How it works</Link>
           </nav>
+          <p className="hint">Four screenshots showing PrepPort in use.</p>
           <h1>{title}</h1>
         </header>
         {children}
