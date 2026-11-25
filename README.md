@@ -37,7 +37,7 @@ Select a screenshot to view it at full size.
 
 **[Live demo](https://prepport.vercel.app)**
 
-The first API request after inactivity can take about a minute while the backend starts due to Render's Free Tier behavior.
+Note: The demo uses free hosting, so the first request may take up to a minute while the backend starts.
 
 ## How it works
 

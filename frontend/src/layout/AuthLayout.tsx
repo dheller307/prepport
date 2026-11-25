@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { AppPreviewLink } from "./AppPreviewLink";
 
 type AuthLayoutProps = {
   title: string;
@@ -20,10 +21,8 @@ export function AuthLayout({ title, children }: AuthLayoutProps) {
             calculate nutrition using your actual raw and cooked weights.
           </p>
           <nav className="auth-links" aria-label="Learn about PrepPort">
-            <a href="https://github.com/dheller307/prepport#app-walkthrough">
-              Preview the app (4 screenshots)
-            </a>
-            <Link to="/">Tutorial</Link>
+            <AppPreviewLink />
+            <Link to="/">How it works</Link>
           </nav>
           <h1>{title}</h1>
         </header>
