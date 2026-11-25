@@ -334,7 +334,12 @@ export function PortionBuilder() {
     };
   }, []);
 
-  const batches = prepSessions.flatMap((session) => session.batches ?? []);
+  const batches = prepSessions.flatMap((session) =>
+    (session.batches ?? []).map((batch) => ({
+      ...batch,
+      sessionDate: session.sessionDate,
+    })),
+  );
 
   return (
     <div>
@@ -394,8 +399,7 @@ export function PortionBuilder() {
                           <option value="">Select a batch</option>
                           {batches.map((batch) => (
                             <option key={batch.id} value={batch.id}>
-                              {batch.ingredient.name} -{" "}
-                              {batch.createdAt?.split("T")[0]} -{" "}
+                              {batch.ingredient.name} - {batch.sessionDate} -{" "}
                               {formatAmount(batch.rawWeightG)} g raw /{" "}
                               {formatAmount(batch.cookedWeightG)} g cooked
                             </option>

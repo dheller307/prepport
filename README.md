@@ -1,138 +1,65 @@
 # PrepPort
 
-PrepPort is a meal-prep companion that converts cooked serving weights back to raw-weight equivalents, so users can log macros and calories from the original nutrition data rather than generic cooked-food estimates.
+A generic cooked-chicken entry in a nutrition tracker assumes a cooking yield that can differ from yours. Roasting and grilling can remove different amounts of moisture, so two portions with the same cooked weight can represent different raw weights.
 
-Build ingredient batches from raw and cooked weights, assemble meals from those batches, track what remains, and generate copyable nutrition summaries for logging.
+PrepPort is a meal-prep app that uses your measured batch weights to calculate how much to log against the raw nutrition entry. If 1,000 g of raw chicken cooks down to 750 g, a 150 g cooked portion corresponds to **200 g raw**. If another 1,000 g batch cooks down to 600 g, a serving of the same cooked weight corresponds to **250 g raw**.
 
-[Live Demo](https://prepport.duckdns.org)
+**[Live demo](https://prepport.vercel.app)**
 
-## Why PrepPort?
+The first API request after inactivity can take about a minute while the backend starts due to Render's Free Tier behavior.
 
-Cooking changes food weight. For example, 1,000 g of raw chicken might become 750 g after cooking. If you eat 150 g of that cooked chicken, PrepPort converts it to:
+## How it works
 
-```text
-150 g cooked × (1,000 g raw / 750 g cooked) = 200 g raw equivalent
-```
+**1. Define ingredients.** Store nutrition per 100 g using raw or cooked food values, depending on the nutritional reference.
 
-That lets PrepPort calculate the serving's nutrition from the original raw entry when appropriate, while still supporting ingredients whose nutrition data is based on cooked weight.
+![Ingredient list showing raw and cooked nutrition entries](assets/readme/ingredients.png)
 
-## Features
+**2. Track prep batches.** Record raw and cooked weights to calculate cooking yield, remaining inventory, and meal usage history.
 
-- Create ingredients with per-100 g nutrition data and a raw/cooked macro basis.
-- Record raw and cooked batch weights to calculate food yield.
-- Build and save multi-ingredient meals from prepared batches.
-- Convert cooked portions to raw-weight equivalents and calculate nutrition.
-- Track meal history and remaining cooked batch inventory.
-- Generate copyable nutrition summaries, with user-scoped data protected by JWT authentication.
+![Prep session showing batch weights, yield, remaining inventory, and meal history](assets/readme/prep-session.png)
 
-## How PrepPort Works
+<!-- Add steps 3 and 4 with the Meal Builder screenshots here. -->
 
-PrepPort stores both the raw and cooked weight of each batch and calculates its yield:
+The Meal Builder combines weighed portions from your batches, calculates macros and calories, and produces a copyable summary.
 
-```text
-yield ratio = cooked batch weight / raw batch weight
-```
-
-For ingredients whose nutrition data is based on raw food, the cooked serving is converted back to raw-equivalent grams before macros are calculated:
-
-```text
-raw equivalent = cooked serving × raw batch weight / cooked batch weight
-macros = nutrition per 100 g × macro-reference grams / 100
-```
-
-For ingredients whose nutrition data is already based on cooked food, PrepPort uses the cooked serving weight directly.
+For ingredients with nutrition values based on cooked food, PrepPort uses the portion’s cooked weight directly.
 
 ## Architecture
 
-```text
-React + TypeScript SPA
-        │ REST / JSON + JWT
-        ▼
-Spring Boot API
-        │ JPA
-        ▼
-PostgreSQL
+```mermaid
+flowchart LR
+    UI["React + TypeScript SPA<br/>Vite build on Vercel"]
+    API["Dockerized Spring Boot API<br/>Java 17 on Render"]
+    DB[("PostgreSQL 16<br/>Neon")]
+    UI -->|HTTPS REST + JWT| API
+    API -->|Spring Data JPA| DB
 ```
 
-Core data relationships:
+Spring Boot controllers handle HTTP requests, services apply meal and nutrition rules, and Spring Data repositories access PostgreSQL. The same nutrition calculation powers meal previews, saved meals, and copyable summaries, keeping results consistent. Spring Security verifies JWTs, and repository queries scope protected records to the signed-in user.
 
-```text
-User
-├── Ingredients
-├── Prep Sessions
-│   └── Batches
-│       └── raw weight, cooked weight, ingredient
-└── Saved Meals
-    └── Meal lines
-        └── batch + cooked grams
+## Data model
+
+```mermaid
+erDiagram
+    USER ||..o{ INGREDIENT : defines
+    USER ||..o{ PREP_SESSION : records
+    USER ||..o{ SAVED_MEAL : logs
+    PREP_SESSION ||..o{ BATCH : contains
+    INGREDIENT ||..o{ BATCH : describes
+    SAVED_MEAL ||..|{ MEAL_LINE : contains
+    BATCH ||..o{ MEAL_LINE : supplies
 ```
 
-Protected API requests use the authenticated user, and repository queries scope records to that user.
+- A **batch** records the raw and cooked weights of one preparation of an ingredient.
+- A **prep session** groups batches prepared together.
+- A **meal line** records the cooked grams taken from one batch.
+- A **saved meal** is a dated collection of meal lines that can draw from different prep sessions.
 
-## Tech Stack
+A Sunday prep session can group chicken and broccoli together. Wednesday’s lunch can use that chicken alongside rice cooked on Tuesday. Each meal line points back to its source batch, so PrepPort can use that batch’s measured yield when converting a portion to raw weight.
 
-- **Frontend:** React 18, TypeScript, Vite
-- **Backend:** Java 17, Spring Boot 3, Spring Security, Spring Data JPA
-- **Database:** PostgreSQL 16
-- **Testing:** JUnit 5, Mockito
-- **Infrastructure:** Docker, Docker Compose, AWS Lightsail
+## Engineering details
 
-## Engineering Highlights
-
-- `YieldCalculator` isolates raw-to-cooked conversion and nutrition-scaling logic.
-- `PortionLogService` merges duplicate batch entries before inventory validation to prevent over-allocation.
-- Remaining cooked inventory is derived from saved meal history rather than maintained as a separate mutable counter.
-- Protected endpoints use JWT authentication and user-scoped repository queries, while centralized error handling returns readable validation and integrity messages.
-
-## Running Locally
-
-```bash
-docker compose up -d
-
-cd backend
-./mvnw spring-boot:run
-
-cd ../frontend
-npm install
-npm run dev
-```
-
-Set `VITE_API_URL=http://localhost:8080` in `frontend/.env.local`.
-
-## Testing
-
-Run backend tests:
-
-```bash
-cd backend
-./mvnw test
-```
-
-The backend includes focused tests for:
-
-- yield and macro calculations;
-- portion calculation behavior;
-- prep-session deletion impact and force-delete rules;
-- batch and ingredient reference guards;
-- preventing batch cooked weights from falling below recorded meal usage.
-
-Run frontend formatting and a production build:
-
-```bash
-cd frontend
-npm run format:check
-npm run build
-```
-
-Run backend formatting checks:
-
-```bash
-cd backend
-./mvnw spotless:check
-```
-
-## Deployment
-
-The existing Lightsail deployment serves the API and PostgreSQL through Docker Compose. The repository also includes configuration for deploying the Vite frontend to Vercel, running the Spring Boot API on Render, and moving the database to Neon. Follow the [free-tier deployment guide](docs/deploy-free.md) for setup, data migration, verification, and Lightsail retirement.
-
-See the [PrepPort interview guide](docs/interview-guide.md) for a demo script, stack decisions, and a walkthrough of the Java and React code.
+- **Inventory derived from meal history.** Remaining cooked weight is the batch’s cooked weight minus the total recorded on its meal lines. Editing or deleting a meal changes that total without maintaining a separate inventory counter.
+- **Validation before saving.** The API combines repeated portions from the same batch before checking available inventory. When editing a meal, its previous portions are credited back before validating the new amounts.
+- **Dependency-aware deletion.** Before deleting a prep session, the app warns how many saved meals depend on it and requires confirmation. The API then deletes the session, its batches, and the affected saved meals in one transaction.
+- **Backend tests.** Coverage includes yield and macro calculations, missing batches, batch weight changes, and deletion rules for referenced records.
