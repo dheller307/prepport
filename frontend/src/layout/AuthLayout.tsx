@@ -12,14 +12,19 @@ export function AuthLayout({ title, children }: AuthLayoutProps) {
       <div className="auth-card">
         <header className="auth-header">
           <p className="app-title">PrepPort</p>
-          <p className="page-lede">Companion for meal prep</p>
           <p className="page-lede">
-            Build meals from prepared batches and copy nutrition details for any
-            tracker.
+            <strong>Meal prep, measured accurately.</strong>
           </p>
-          <p className="hint">
+          <p className="page-lede">
+            Track cooking yields, build meals from prepared batches, and
+            calculate nutrition using your actual raw and cooked weights.
+          </p>
+          <nav className="auth-links" aria-label="Learn about PrepPort">
+            <a href="https://github.com/dheller307/prepport#app-walkthrough">
+              Preview the app (4 screenshots)
+            </a>
             <Link to="/">Tutorial</Link>
-          </p>
+          </nav>
           <h1>{title}</h1>
         </header>
         {children}

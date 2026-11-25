@@ -15,9 +15,9 @@ export function TutorialSteps() {
         amount.
       </li>
       <li>
-        <strong>Copy nutrition details.</strong> PrepPort calculates meal macros
-        and tracker-ready amounts. Copying alone does not save a meal or change
-        batch availability, you must save the meal.
+        <strong>Copy nutrition details.</strong> Generate tracker-ready
+        nutrition values for your meal. Save the meal separately to record its
+        batch usage.
       </li>
     </ol>
   );

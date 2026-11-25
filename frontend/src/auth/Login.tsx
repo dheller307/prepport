@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { apiJson } from "../api/client";
 import { AuthResponse } from "../types/auth";
 import { setToken } from "../auth/token";
+import { AuthSubmit } from "./AuthSubmit";
 
 type LoginFormProps = {
   onSuccess: () => void;
@@ -12,9 +13,13 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const requestPending = useRef(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (requestPending.current) return;
+
+    requestPending.current = true;
     setError(null);
     setIsLoading(true);
     try {
@@ -28,17 +33,18 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     } catch (error) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
+      requestPending.current = false;
       setIsLoading(false);
     }
   };
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="auth-form" onSubmit={handleSubmit}>
       {error && (
         <p className="form-error" role="alert">
           {error}
         </p>
       )}
-      <div>
+      <div className="form-field">
         <label htmlFor="email">Email</label>
         <input
           type="email"
@@ -49,7 +55,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
-      <div>
+      <div className="form-field">
         <label htmlFor="password">Password</label>
         <input
           type="password"
@@ -60,9 +66,11 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
-      <button type="submit" disabled={isLoading}>
-        {isLoading ? "Logging in..." : "Login"}
-      </button>
+      <AuthSubmit
+        label="Log in"
+        pendingLabel="Logging in..."
+        isLoading={isLoading}
+      />
     </form>
   );
 }

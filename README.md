@@ -4,25 +4,46 @@ A generic cooked-chicken entry in a nutrition tracker assumes a cooking yield th
 
 PrepPort is a meal-prep app that uses your measured batch weights to calculate how much to log against the raw nutrition entry. If 1,000 g of raw chicken cooks down to 750 g, a 150 g cooked portion corresponds to **200 g raw**. If another 1,000 g batch cooks down to 600 g, a serving of the same cooked weight corresponds to **250 g raw**.
 
+## App walkthrough
+
+Select a screenshot to view it at full size.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="assets/readme/ingredients.png"><img src="assets/readme/ingredients.png" alt="Ingredient list showing raw- and cooked-basis nutrition entries" height="230" /></a><br />
+      <strong>1. Define ingredients</strong><br />
+      Store nutrition per 100 g using raw or cooked food values, depending on the nutritional reference.
+    </td>
+    <td width="50%" valign="top">
+      <a href="assets/readme/prep-session.png"><img src="assets/readme/prep-session.png" alt="Prep session showing batch weights, yield, remaining inventory, and meal history" height="230" /></a><br />
+      <strong>2. Track prep batches</strong><br />
+      Record raw and cooked weights to calculate cooking yield, remaining inventory, and meal usage history.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="assets/readme/build-meal.png"><img src="assets/readme/build-meal.png" alt="Meal Builder showing cooked chicken and rice portions and their calculated nutrition" height="230" /></a><br />
+      <strong>3. Build a meal</strong><br />
+      Combine cooked portions from prepared batches and calculate nutrition using each batch's measured yield.
+    </td>
+    <td width="50%" valign="top">
+      <a href="assets/readme/review-and-export.png"><img src="assets/readme/review-and-export.png" alt="Meal Builder showing meal totals, copyable tracker text, and a previously saved meal" height="230" /></a><br />
+      <strong>4. Review and export</strong><br />
+      View meal nutrition, generate a copyable tracking summary, and access previously saved meals.
+    </td>
+  </tr>
+</table>
+
 **[Live demo](https://prepport.vercel.app)**
 
 The first API request after inactivity can take about a minute while the backend starts due to Render's Free Tier behavior.
 
 ## How it works
 
-**1. Define ingredients.** Store nutrition per 100 g using raw or cooked food values, depending on the nutritional reference.
-
-![Ingredient list showing raw and cooked nutrition entries](assets/readme/ingredients.png)
-
-**2. Track prep batches.** Record raw and cooked weights to calculate cooking yield, remaining inventory, and meal usage history.
-
-![Prep session showing batch weights, yield, remaining inventory, and meal history](assets/readme/prep-session.png)
-
-<!-- Add steps 3 and 4 with the Meal Builder screenshots here. -->
-
-The Meal Builder combines weighed portions from your batches, calculates macros and calories, and produces a copyable summary.
-
-For ingredients with nutrition values based on cooked food, PrepPort uses the portion’s cooked weight directly.
+1. Choose the nutrition basis that matches the reference. PrepPort uses the portion’s cooked weight directly for cooked-basis entries.
+2. Record the raw and cooked weights for each batch. The chicken shown above went from 500 g raw to 400 g cooked, giving it an 80% yield.
+3. Weigh your cooked portions. For raw-basis entries, PrepPort divides the portion’s cooked weight by the batch yield. In the walkthrough, 150 g of cooked chicken becomes 187.5 g for the raw nutrition entry.
 
 ## Architecture
 

@@ -9,8 +9,10 @@ export function HowItWorksPage() {
           <p className="app-title">PrepPort</p>
           <h1>Tutorial</h1>
           <p className="page-lede">
-            PrepPort helps you build meals from prepared batches, track what
-            remains, and copy nutrition details into your tracker.
+            Cooking changes food weight, and batches of the same ingredient can
+            yield different cooked weights. PrepPort uses the raw and cooked
+            weights you record for each batch to calculate nutrition for the
+            portions you eat.
           </p>
         </header>
 
